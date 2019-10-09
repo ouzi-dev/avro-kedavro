@@ -1,0 +1,24 @@
+{
+  "name": "Voldemort",
+  "type": "record",
+  "namespace": "com.avro.kedavro",
+  "fields": [
+    {
+      "name": "curse",
+      "type": "string"
+    },
+    {
+      "name": "house",
+      "type": "string",
+      "default": "slytherin"
+    },
+    {
+      "name": "wand",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}
