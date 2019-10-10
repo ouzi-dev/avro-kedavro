@@ -20,6 +20,26 @@ type Field struct {
 	DefaultValue interface{}
 }
 
+func validateUnionFields(name string, unionTypes []interface{}, defaultValue interface{}) error {
+	if len(unionTypes) != 2 {
+		return fmt.Errorf("only unions with two types are supported, union name \"%s\", types: %v", name, unionTypes)
+	}
+
+	if unionTypes[0] != "null" {
+		return fmt.Errorf("only unions where the first type is \"null\" are supported, union name \"%s\", types: %v", name, unionTypes)
+	}
+
+	if _, ok := unionTypes[1].(string); !ok {
+		return fmt.Errorf("only strings are allowed as type in unions, union name \"%s\", types: %v", name, unionTypes)
+	}
+
+	if defaultValue != nil {
+		return fmt.Errorf("only null is accepted as default value for unions, union name \"%s\", defaultValue: %v", name, defaultValue)
+	}
+
+	return nil
+}
+
 func ParseSchemaField(f interface{}) (*Field, error) {
 	fieldMap, ok := f.(map[string]interface{})
 	if !ok {
@@ -35,6 +55,8 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 		return nil, fmt.Errorf("field type is required: %v", f)
 	}
 
+	defaultValue, hasDefault := fieldMap["default"]
+
 	var fieldType FieldType
 
 	switch t := typeValue.(type) {
@@ -42,11 +64,13 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 		fieldType = Primitive
 	case []interface{}:
 		fieldType = Union
+		// for now we only accept Unions with max two items, and the first one has to be null
+		if err := validateUnionFields(name, t, defaultValue); err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("unknown field type %v in: %v", t, f)
 	}
-
-	defaultValue, hasDefault := fieldMap["default"]
 
 	var fields []interface{}
 

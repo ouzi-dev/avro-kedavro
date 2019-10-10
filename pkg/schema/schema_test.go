@@ -175,3 +175,41 @@ func TestSchemas(t *testing.T) {
 		}
 	}
 }
+
+func TestValidUnions(t *testing.T) {
+	type testItem struct {
+		union   []interface{}
+		isError bool
+	}
+	testSchemas := []testItem{
+		testItem{
+			union:   []interface{}{"null", "long"},
+			isError: false,
+		},
+		testItem{
+			union:   []interface{}{"null", "long", "string"},
+			isError: true,
+		},
+		testItem{
+			union:   []interface{}{"long", "null"},
+			isError: true,
+		},
+		testItem{
+			union:   []interface{}{"null", 1234},
+			isError: true,
+		},
+		testItem{
+			union:   []interface{}{"null"},
+			isError: true,
+		},
+	}
+
+	for _, v := range testSchemas {
+		err := validateUnionFields("test", v.union)
+		if v.isError {
+			assert.Error(t, err)
+		} else {
+			assert.NoError(t, err)
+		}
+	}
+}

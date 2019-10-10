@@ -9,11 +9,11 @@ const (
 	longType   = "long"
 	intType    = "int"
 	stringType = "string"
-	arrayType  = "array"
+	recordType = "record"
 
 	// not supported yet:
-	enumType   = "enum"
-	fixedType  = "fixed"
-	mapType    = "map"
-	recordType = "record"
+	arrayType = "array"
+	enumType  = "enum"
+	fixedType = "fixed"
+	mapType   = "map"
 )

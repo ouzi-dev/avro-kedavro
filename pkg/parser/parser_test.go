@@ -11,12 +11,39 @@ import (
 
 const testSchema = "../../resources/test.avsc"
 
+var spellBytes = []byte("alohomora")
+
 const test1 = `
-{"curse": "imperious", "house": "slytherin", "wand": "unicorn"}
+{
+	"name": "Voldemort",
+	"curse": "imperious", 
+	"house": "slytherin", 
+	"wand": "unicorn", 
+	"has_broom": false,
+	"spell_bytes":"YWxvaG9tb3Jh",
+	"spell_performance": 89.67,
+	"spell_affinity": 4.940656458412465441765687928682213723651e-321,
+	"bad_spells": 42949672951234,
+	"evil_spells": 7,
+	"good_spells": 1,
+	"muggles_killed": 3,
+	"testing": {
+		"name": "test",
+		"curse":"bleh"
+	}
+}
 `
 
 const test2 = `
-{"curse": "cruciatus"}
+{
+	"name": null,
+	"curse": "cruciatus",
+	"spell_bytes":"YWxvaG9tb3Jh",
+	"spell_performance": 89.67,
+	"testing": {
+		"curse":"bleh"
+	}
+}
 `
 
 func TestParser(t *testing.T) {
@@ -36,6 +63,7 @@ func TestParser(t *testing.T) {
 	assert.NoError(t, err)
 
 	fmt.Println(string(textual[:]))
+
 	result, err = p.Parse([]byte(test2))
 	assert.NoError(t, err)
 

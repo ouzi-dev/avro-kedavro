@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/linkedin/goavro"
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 )
 
@@ -43,16 +42,20 @@ func (p *parser) Parse(record []byte) (interface{}, error) {
 		return nil, fmt.Errorf("unmarshall record failed: %v", err)
 	}
 
+	return parseRecord(p.schema, jsonRecord)
+}
+
+func parseRecord(field *schema.Field, record map[string]interface{}) (interface{}, error) {
 	avroRecord := map[string]interface{}{}
 
-	for _, v := range p.schema.Fields {
+	for _, v := range field.Fields {
 		field, err := schema.ParseSchemaField(v)
 
 		if err != nil {
 			return nil, err
 		}
 
-		newField, err := p.parseField(field, jsonRecord)
+		newField, err := parseField(field, record)
 		if err != nil {
 			return nil, fmt.Errorf("field parse error, field: %v, error: %v", field, err)
 		}
@@ -63,15 +66,15 @@ func (p *parser) Parse(record []byte) (interface{}, error) {
 	return avroRecord, nil
 }
 
-func (p *parser) parseField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
 	var result interface{}
 	var err error
 	switch field.Type {
 	case schema.Primitive:
-		result, err = p.parseTypedField(field, record)
+		result, err = parseTypedField(field, record)
 	case schema.Union:
 		// Union
-		result, err = p.parseUnionField(field, record)
+		result, err = parseUnionField(field, record)
 	default:
 		err = fmt.Errorf("unknown field type in field %s", field.Name)
 	}
@@ -83,42 +86,7 @@ func (p *parser) parseField(field *schema.Field, record map[string]interface{}) 
 	return result, nil
 }
 
-func (p *parser) parseUnionField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
-	value, ok := record[field.Name]
-	if !ok {
-		if !field.HasDefault {
-			return nil, fmt.Errorf("value for field \"%s\" not found", field.Name)
-		} else {
-			typeName, err := p.GetStringType(field.DefaultValue)
-			if err != nil {
-				return nil, err
-			}
-			return goavro.Union(typeName, field.DefaultValue), nil
-		}
-	}
-
-	typeName, err := p.GetStringType(value)
-	if err != nil {
-		return nil, err
-	}
-
-	return goavro.Union(typeName, value), nil
-}
-
-func (p *parser) parseTypedField(
-	field *schema.Field,
-	record map[string]interface{},
-) (interface{}, error) {
-
-	value, ok := record[field.Name]
-	if !ok {
-		if !field.HasDefault {
-			return nil, fmt.Errorf("value for field \"%s\" not found", field.Name)
-		} else {
-			return field.DefaultValue, nil
-		}
-	}
-
+func parseTypedField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
 	var parsedValue interface{}
 	var err error
 
@@ -126,55 +94,26 @@ func (p *parser) parseTypedField(
 
 	switch fieldType {
 	case stringType:
-		parsedValue, err = parseStringField(field.Name, value)
+		parsedValue, err = parseStringField(field, record)
 	case nilType:
+		parsedValue, err = parseNilField(field, record)
 	case boolType:
+		parsedValue, err = parseBoolField(field, record)
 	case bytesType:
+		parsedValue, err = parseBytesField(field, record)
 	case floatType:
+		parsedValue, err = parseFloatField(field, record)
 	case doubleType:
+		parsedValue, err = parseDoubleField(field, record)
 	case longType:
+		parsedValue, err = parseLongField(field, record)
 	case intType:
-	case arrayType:
+		parsedValue, err = parseIntField(field, record)
+	case recordType:
+		parsedValue, err = parseRecordField(field, record)
 	default:
 		return nil, fmt.Errorf("type \"%s\" not supported yet...", fieldType)
 	}
 
 	return parsedValue, err
 }
-
-func (p *parser) GetStringType(t interface{}) (string, error) {
-	switch v := t.(type) {
-	case nil:
-		return nilType, nil
-	case bool:
-		return boolType, nil
-	case []byte:
-		return bytesType, nil
-	case float32:
-		return floatType, nil
-	case float64:
-		return doubleType, nil
-	case int64:
-		return longType, nil
-	case int32:
-		return intType, nil
-	case string:
-		return stringType, nil
-	case []interface{}:
-		return arrayType, nil
-	default:
-		return "", fmt.Errorf("unknow type %v for \"%v\"", v, t)
-	}
-}
-
-/*
-
-double	float64
-long	int64
-int	    int32
-string	string
-array	[]interface{}
-enum	string
-fixed	[]byte
-map and record	map[string]interface{}
-*/
