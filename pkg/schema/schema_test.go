@@ -13,7 +13,7 @@ func TestSchemas(t *testing.T) {
 		isError bool
 	}
 	testSchemas := []testItem{
-		testItem{
+		{
 			schema: `
 			{
 				"name": "Voldemort",
@@ -41,7 +41,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: false,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "curse",
@@ -50,7 +50,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: false,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "wand",
@@ -63,7 +63,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: false,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "house",
@@ -74,7 +74,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: false,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"type": "string",
@@ -84,7 +84,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "",
@@ -95,7 +95,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": 1234,
@@ -106,7 +106,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "test",
@@ -116,7 +116,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "test",
@@ -127,7 +127,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "test",
@@ -138,7 +138,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "test",
@@ -149,7 +149,7 @@ func TestSchemas(t *testing.T) {
 			`,
 			isError: true,
 		},
-		testItem{
+		{
 			schema: `
 			{
 				"name": "test",
@@ -182,23 +182,23 @@ func TestValidUnions(t *testing.T) {
 		isError bool
 	}
 	testSchemas := []testItem{
-		testItem{
+		{
 			union:   []interface{}{"null", "long"},
 			isError: false,
 		},
-		testItem{
+		{
 			union:   []interface{}{"null", "long", "string"},
 			isError: true,
 		},
-		testItem{
+		{
 			union:   []interface{}{"long", "null"},
 			isError: true,
 		},
-		testItem{
+		{
 			union:   []interface{}{"null", 1234},
 			isError: true,
 		},
-		testItem{
+		{
 			union:   []interface{}{"null"},
 			isError: true,
 		},

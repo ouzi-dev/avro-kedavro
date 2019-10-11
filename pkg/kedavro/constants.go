@@ -1,4 +1,4 @@
-package parser
+package kedavro
 
 const (
 	nilType    = "null"

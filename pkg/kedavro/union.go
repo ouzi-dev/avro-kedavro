@@ -1,4 +1,4 @@
-package parser
+package kedavro
 
 import (
 	"fmt"
@@ -63,7 +63,7 @@ func parseUnionField(field *schema.Field, record map[string]interface{}) (interf
 		HasDefault: false,
 	}
 
-	parsedValue, err := parseTypedField(unionField, record)
+	parsedValue, err := parsePrimitiveField(unionField, record)
 
 	if err != nil {
 		return nil, err

@@ -30,7 +30,8 @@
     },
     {
       "name": "muggle",
-      "type": "null"
+      "type": "null",
+      "default": null
     },
     {
       "name": "has_broom",
