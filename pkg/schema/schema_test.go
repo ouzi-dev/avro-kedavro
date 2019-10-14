@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -168,7 +169,7 @@ func TestSchemas(t *testing.T) {
 		err := json.Unmarshal([]byte(v.schema), &asJson)
 		assert.NoError(t, err)
 
-		_, err = ParseSchemaField(asJson)
+		_, err = ParseSchemaField(asJson, types.Options{})
 		if v.isError {
 			assert.Error(t, err)
 		} else {

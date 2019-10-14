@@ -37,3 +37,8 @@ endif
 fmt:
 	@echo "fmt target..."
 	@gofmt -l -w -s $(SRC)
+
+.PHONE: covhtml
+covhtml: test
+	@scripts/coverage.sh
+	@go tool cover -html=.cover/cover.out

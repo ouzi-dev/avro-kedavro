@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
 type parser struct {
@@ -15,25 +16,52 @@ type Parser interface {
 	Parse(record []byte) (interface{}, error)
 }
 
-func NewParser(schemaString string) (Parser, error) {
+// ParserOption reconfigure the parser creation.
+type ParserOption func(*types.Options)
+
+func WithStringToNumber() ParserOption {
+	return func(o *types.Options) { o.IsStringToNumber = true }
+}
+
+func WithStringToBool() ParserOption {
+	return func(o *types.Options) { o.IsStringToBool = true }
+}
+
+func WithTimestampToMillis() ParserOption {
+	return func(o *types.Options) { o.IsTimestampToMillis = true }
+}
+
+func WithTimestampToMicros() ParserOption {
+	return func(o *types.Options) { o.IsTimestampToMicros = true }
+}
+
+func NewParser(schemaString string, opts ...ParserOption) (Parser, error) {
 	s := map[string]interface{}{}
 
 	if err := json.Unmarshal([]byte(schemaString), &s); err != nil {
 		return nil, fmt.Errorf("unmarshall schema failed: %v", err)
 	}
 
-	rootField, err := schema.ParseSchemaField(s)
+	options := types.Options{}
+
+	for _, opt := range opts {
+		opt(&options)
+	}
+
+	rootField, err := schema.ParseSchemaField(s, options)
 	if err != nil {
 		return nil, err
 	}
 
-	if rootField.Type != schema.Primitive || rootField.TypeValue.(string) != "record" {
+	if rootField.Type != types.Primitive || rootField.TypeValue.(string) != "record" {
 		return nil, fmt.Errorf("schema root field must be of type record")
 	}
 
-	return &parser{
+	parser := &parser{
 		schema: rootField,
-	}, nil
+	}
+
+	return parser, nil
 }
 
 func (p *parser) Parse(record []byte) (interface{}, error) {

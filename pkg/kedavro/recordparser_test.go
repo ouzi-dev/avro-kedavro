@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -77,7 +78,7 @@ func getFieldFromJSON(jsonString string, t *testing.T) *schema.Field {
 	jsonMap := map[string]interface{}{}
 	err := json.Unmarshal([]byte(jsonString), &jsonMap)
 	assert.NoError(t, err)
-	field, err := schema.ParseSchemaField(jsonMap)
+	field, err := schema.ParseSchemaField(jsonMap, types.Options{})
 	assert.NoError(t, err)
 	return field
 }

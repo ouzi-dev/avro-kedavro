@@ -1,23 +1,20 @@
 package schema
 
-import "fmt"
+import (
+	"fmt"
 
-type FieldType int
-
-const (
-	Unknown   FieldType = 0
-	Primitive FieldType = 1
-	Union     FieldType = 2
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
 type Field struct {
-	Name         string
-	Type         FieldType
-	TypeValue    interface{}
-	LogicalType  string
-	Fields       []interface{}
 	HasDefault   bool
+	Opts         types.Options
+	Name         string
+	LogicalType  string
+	Type         types.FieldType
+	TypeValue    interface{}
 	DefaultValue interface{}
+	Fields       []interface{}
 }
 
 func validateUnionFields(name string, unionTypes []interface{}, defaultValue interface{}) error {
@@ -40,7 +37,7 @@ func validateUnionFields(name string, unionTypes []interface{}, defaultValue int
 	return nil
 }
 
-func ParseSchemaField(f interface{}) (*Field, error) {
+func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 	fieldMap, ok := f.(map[string]interface{})
 	if !ok {
 		return nil, fmt.Errorf("field not valid as map[string]interface{}: %v", f)
@@ -54,12 +51,12 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 		return nil, fmt.Errorf("field type is required: %v", f)
 	}
 	defaultValue, hasDefault := fieldMap["default"]
-	var fieldType FieldType
+	var fieldType types.FieldType
 	switch t := typeValue.(type) {
 	case string:
-		fieldType = Primitive
+		fieldType = types.Primitive
 	case []interface{}:
-		fieldType = Union
+		fieldType = types.Union
 		// for now we only accept Unions with max two items, and the first one has to be null
 		if err := validateUnionFields(name, t, defaultValue); err != nil {
 			return nil, err
@@ -95,5 +92,6 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 		Fields:       fields,
 		LogicalType:  logicalType,
 		TypeValue:    typeValue,
+		Opts:         opts,
 	}, nil
 }

@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
 //nolint
 func TestNilPrimitiveType(t *testing.T) {
-	fieldNoDefault := getPrimitiveField(nilType, false, nil)
-	fieldDefaultValue := getPrimitiveField(nilType, true, nil)
-	fieldDefaultWrongValue := getPrimitiveField(nilType, true, "bleh")
+	fieldNoDefault := getPrimitiveField(types.NilType, false, nil)
+	fieldDefaultValue := getPrimitiveField(types.NilType, true, nil)
+	fieldDefaultWrongValue := getPrimitiveField(types.NilType, true, "bleh")
 
 	recordWithNullValue := getRecord("test", nil)
 	recordWithValueWrongType := getRecord("test", 1234)
@@ -89,7 +90,7 @@ func TestNilPrimitiveType(t *testing.T) {
 func TestParsePrimitiveFields(t *testing.T) {
 	tests := []testType{
 		{
-			fieldType:            stringType,
+			fieldType:            types.StringType,
 			validValue:           "testString",
 			defaultValue:         "defaultValue",
 			wrongValue:           1234,
@@ -97,7 +98,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: "defaultValue",
 		},
 		{
-			fieldType:            boolType,
+			fieldType:            types.BoolType,
 			validValue:           true,
 			defaultValue:         true,
 			wrongValue:           1234,
@@ -105,7 +106,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: true,
 		},
 		{
-			fieldType:            bytesType,
+			fieldType:            types.BytesType,
 			validValue:           "testString",
 			defaultValue:         "defaultValue",
 			wrongValue:           1234,
@@ -113,7 +114,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: []byte("defaultValue"),
 		},
 		{
-			fieldType:            floatType,
+			fieldType:            types.FloatType,
 			validValue:           float64(12345.67),
 			defaultValue:         float64(76543.21),
 			wrongValue:           "bleh",
@@ -121,7 +122,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: float32(76543.21),
 		},
 		{
-			fieldType:            doubleType,
+			fieldType:            types.DoubleType,
 			validValue:           float64(4.94e-321),
 			defaultValue:         float64(3.95e-321),
 			wrongValue:           "bleh",
@@ -129,7 +130,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: float64(3.95e-321),
 		},
 		{
-			fieldType:            longType,
+			fieldType:            types.LongType,
 			validValue:           float64(42949672951234),
 			defaultValue:         float64(52949672951234),
 			wrongValue:           "bleh",
@@ -137,7 +138,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: int64(52949672951234),
 		},
 		{
-			fieldType:            intType,
+			fieldType:            types.IntType,
 			validValue:           float64(23456),
 			defaultValue:         float64(65432),
 			wrongValue:           "bleh",
@@ -145,7 +146,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedDefaultValue: int32(65432),
 		},
 		{
-			fieldType:            intType,
+			fieldType:            types.IntType,
 			validValue:           float64(23456),
 			defaultValue:         float64(65432),
 			wrongValue:           "bleh",
@@ -163,7 +164,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 func getPrimitiveField(fieldType string, hasDefault bool, defaultValue interface{}) *schema.Field {
 	return &schema.Field{
 		Name:         "test",
-		Type:         schema.Primitive,
+		Type:         types.Primitive,
 		TypeValue:    fieldType,
 		Fields:       []interface{}{},
 		HasDefault:   hasDefault,
@@ -292,19 +293,19 @@ func testPrimitiveField(t *testing.T, test testType) {
 		var err error
 
 		switch test.fieldType {
-		case stringType:
+		case types.StringType:
 			result, err = parseStringField(v.field, v.record)
-		case boolType:
+		case types.BoolType:
 			result, err = parseBoolField(v.field, v.record)
-		case bytesType:
+		case types.BytesType:
 			result, err = parseBytesField(v.field, v.record)
-		case floatType:
+		case types.FloatType:
 			result, err = parseFloatField(v.field, v.record)
-		case doubleType:
+		case types.DoubleType:
 			result, err = parseDoubleField(v.field, v.record)
-		case longType:
+		case types.LongType:
 			result, err = parseLongField(v.field, v.record)
-		case intType:
+		case types.IntType:
 			result, err = parseIntField(v.field, v.record)
 		default:
 			assert.Fail(t, "unknown primitive field "+test.fieldType)
@@ -317,5 +318,4 @@ func testPrimitiveField(t *testing.T, test testType) {
 			assert.NoError(t, err)
 		}
 	}
-
 }
