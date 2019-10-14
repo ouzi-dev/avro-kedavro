@@ -14,7 +14,7 @@ type Field struct {
 	Type         types.FieldType
 	TypeValue    interface{}
 	DefaultValue interface{}
-	Fields       []interface{}
+	Fields       []*Field
 }
 
 func validateUnionFields(name string, unionTypes []interface{}, defaultValue interface{}) error {
@@ -64,16 +64,6 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 	default:
 		return nil, fmt.Errorf("unknown field type %v in: %v", t, f)
 	}
-	var fields []interface{}
-	mapFieldsValue, ok := fieldMap["fields"]
-	if !ok {
-		fields = []interface{}{}
-	} else {
-		fields, ok = mapFieldsValue.([]interface{})
-		if !ok {
-			return nil, fmt.Errorf("fields has to be an array: %v", mapFieldsValue)
-		}
-	}
 	var logicalType string
 	logicalTypeValue, ok := fieldMap["logicalType"]
 	if !ok {
@@ -84,7 +74,18 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 			return nil, fmt.Errorf("logicaltype has to be a string, but it's current value is: %v", logicalTypeValue)
 		}
 	}
-	return &Field{
+	var fields []*Field
+	mapFieldsValue, ok := fieldMap["fields"]
+	if !ok {
+		fields = []*Field{}
+	} else {
+		f, err := getFieldsArray(mapFieldsValue, opts)
+		if err != nil {
+			return nil, fmt.Errorf("error while parsing field array: %v, error: %v", mapFieldsValue, err)
+		}
+		fields = f
+	}
+	parsedField := &Field{
 		Name:         name,
 		Type:         fieldType,
 		HasDefault:   hasDefault,
@@ -93,5 +94,26 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 		LogicalType:  logicalType,
 		TypeValue:    typeValue,
 		Opts:         opts,
-	}, nil
+	}
+	return parsedField, nil
+}
+
+func getFieldsArray(fieldValue interface{}, opts types.Options) ([]*Field, error) {
+	fields := []*Field{}
+
+	listFields, ok := fieldValue.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("fields has to be an array: %v", fieldValue)
+	}
+
+	for _, v := range listFields {
+		f, err := ParseSchemaField(v, opts)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, f)
+	}
+
+	return fields, nil
+
 }
