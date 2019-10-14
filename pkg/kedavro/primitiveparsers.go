@@ -16,7 +16,7 @@ func parseRecord(field *schema.Field, record map[string]interface{}) (interface{
 	for _, v := range field.Fields {
 		newField, err := parseField(v, record)
 		if err != nil {
-			return nil, fmt.Errorf("field parse error, field: %v, error: %v", field, err)
+			return nil, fmt.Errorf("field parse error, field: %v, error: %v", v, err)
 		}
 
 		avroRecord[v.Name] = newField
