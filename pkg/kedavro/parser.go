@@ -9,8 +9,7 @@ import (
 )
 
 type parser struct {
-	schema  *schema.Field
-	options types.Options
+	schema *schema.Field
 }
 
 type Parser interface {
@@ -59,8 +58,7 @@ func NewParser(schemaString string, opts ...ParserOption) (Parser, error) {
 	}
 
 	parser := &parser{
-		schema:  rootField,
-		options: options,
+		schema: rootField,
 	}
 
 	return parser, nil
