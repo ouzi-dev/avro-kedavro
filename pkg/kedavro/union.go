@@ -7,18 +7,6 @@ import (
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 )
 
-var numberTypes = map[string]bool{
-	intType:    true,
-	longType:   true,
-	floatType:  true,
-	doubleType: true,
-}
-
-var stringTypes = map[string]bool{
-	stringType: true,
-	bytesType:  true,
-}
-
 func parseUnionField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
 	/*
 	 * How to deal with unions the easy way:

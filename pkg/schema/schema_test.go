@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint
 func TestSchemas(t *testing.T) {
 	type testItem struct {
 		schema  string
@@ -178,13 +179,25 @@ func TestSchemas(t *testing.T) {
 
 func TestValidUnions(t *testing.T) {
 	type testItem struct {
-		union   []interface{}
-		isError bool
+		union        []interface{}
+		defaultValue interface{}
+		isError      bool
 	}
 	testSchemas := []testItem{
 		{
-			union:   []interface{}{"null", "long"},
-			isError: false,
+			union:        []interface{}{"null", "long"},
+			isError:      false,
+			defaultValue: nil,
+		},
+		{
+			union:        []interface{}{"null", "long"},
+			isError:      true,
+			defaultValue: "bleh",
+		},
+		{
+			union:        []interface{}{"null", "long"},
+			isError:      true,
+			defaultValue: 123,
 		},
 		{
 			union:   []interface{}{"null", "long", "string"},
@@ -205,7 +218,7 @@ func TestValidUnions(t *testing.T) {
 	}
 
 	for _, v := range testSchemas {
-		err := validateUnionFields("test", v.union)
+		err := validateUnionFields("test", v.union, v.defaultValue)
 		if v.isError {
 			assert.Error(t, err)
 		} else {

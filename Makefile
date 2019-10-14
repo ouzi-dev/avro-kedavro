@@ -24,7 +24,7 @@ test: fmt lint
 .PHONY: lint
 lint: bootstrap 
 	@echo "lint target..."
-	@golangci-lint run --enable-all ./...
+	@golangci-lint run --enable-all --disable lll ./...
 
 .PHONY: bootstrap
 bootstrap:

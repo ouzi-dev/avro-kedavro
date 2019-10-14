@@ -43,6 +43,7 @@ const jsonNoFieldUnion = `
 {"blah": "blah"}
 `
 
+//nolint
 // we don't need to test all the different types of union, since we are
 // already testing every primitive parser
 func TestUnion(t *testing.T) {
@@ -51,51 +52,51 @@ func TestUnion(t *testing.T) {
 	}
 
 	tests := []testItem{
-		testItem{
-			field:    getFieldFromJson(unionNoDefault, t),
-			record:   getJsonAsNative(jsonWithStringUnion, t),
+		{
+			field:    getFieldFromJSON(unionNoDefault, t),
+			record:   getJSONAsNative(jsonWithStringUnion, t),
 			isError:  false,
 			expected: expectedRecordWithString,
 		},
-		testItem{
-			field:    getFieldFromJson(unionNoDefault, t),
-			record:   getJsonAsNative(jsonWithNullUnion, t),
+		{
+			field:    getFieldFromJSON(unionNoDefault, t),
+			record:   getJSONAsNative(jsonWithNullUnion, t),
 			isError:  false,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(unionNoDefault, t),
-			record:   getJsonAsNative(jsonWithNumberUnion, t),
+		{
+			field:    getFieldFromJSON(unionNoDefault, t),
+			record:   getJSONAsNative(jsonWithNumberUnion, t),
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(unionNoDefault, t),
-			record:   getJsonAsNative(jsonNoFieldUnion, t),
+		{
+			field:    getFieldFromJSON(unionNoDefault, t),
+			record:   getJSONAsNative(jsonNoFieldUnion, t),
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(unionDefaultNull, t),
-			record:   getJsonAsNative(jsonWithStringUnion, t),
+		{
+			field:    getFieldFromJSON(unionDefaultNull, t),
+			record:   getJSONAsNative(jsonWithStringUnion, t),
 			isError:  false,
 			expected: expectedRecordWithString,
 		},
-		testItem{
-			field:    getFieldFromJson(unionDefaultNull, t),
-			record:   getJsonAsNative(jsonWithNullUnion, t),
+		{
+			field:    getFieldFromJSON(unionDefaultNull, t),
+			record:   getJSONAsNative(jsonWithNullUnion, t),
 			isError:  false,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(unionDefaultNull, t),
-			record:   getJsonAsNative(jsonWithNumberUnion, t),
+		{
+			field:    getFieldFromJSON(unionDefaultNull, t),
+			record:   getJSONAsNative(jsonWithNumberUnion, t),
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(unionDefaultNull, t),
-			record:   getJsonAsNative(jsonNoFieldUnion, t),
+		{
+			field:    getFieldFromJSON(unionDefaultNull, t),
+			record:   getJSONAsNative(jsonNoFieldUnion, t),
 			isError:  false,
 			expected: nil,
 		},
