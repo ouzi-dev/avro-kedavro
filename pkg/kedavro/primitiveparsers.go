@@ -14,18 +14,12 @@ func parseRecord(field *schema.Field, record map[string]interface{}) (interface{
 	avroRecord := map[string]interface{}{}
 
 	for _, v := range field.Fields {
-		field, err := schema.ParseSchemaField(v, field.Opts)
-
+		newField, err := parseField(v, record)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("field parse error, field: %v, error: %v", v, err)
 		}
 
-		newField, err := parseField(field, record)
-		if err != nil {
-			return nil, fmt.Errorf("field parse error, field: %v, error: %v", field, err)
-		}
-
-		avroRecord[field.Name] = newField
+		avroRecord[v.Name] = newField
 	}
 
 	return avroRecord, nil

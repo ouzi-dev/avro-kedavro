@@ -9,6 +9,78 @@ import (
 )
 
 //nolint
+func TestParseFieldRecursive(t *testing.T) {
+	opts := types.Options{}
+	schema := `
+	{
+		"name": "Voldemort",
+		"type": "record",
+		"fields": [
+		  {
+			"name": "curse",
+			"type": "string"
+		  },
+		  {
+			"name": "house",
+			"type": "string",
+			"default": "slytherin"
+		  },
+		  {
+			"name": "wand",
+			"type": [
+			  "null",
+			  "string"
+			],
+			"default": null
+		  },
+		  {
+			"name": "test",
+			"type": "record",
+			"fields": [
+				{
+					"name": "son",
+					"type": "string"
+				},
+				{
+					"name": "item",
+					"type": "string"
+				},
+				{
+					"name": "test2",
+					"type": "record",
+					"fields": [
+						{
+							"name": "item2",
+							"type": "string"
+						}
+					]
+				}
+			]
+		  }
+		]
+	}
+	`
+
+	schemaMap := map[string]interface{}{}
+	err := json.Unmarshal([]byte(schema), &schemaMap)
+	assert.NoError(t, err)
+
+	result, err := ParseSchemaField(schemaMap, opts)
+	assert.NoError(t, err)
+
+	assert.Equal(t, "Voldemort", result.Name)
+	assert.Equal(t, 4, len(result.Fields))
+	assert.Equal(t, "curse", result.Fields[0].Name)
+	assert.Equal(t, 0, len(result.Fields[0].Fields))
+	assert.Equal(t, "test", result.Fields[3].Name)
+	assert.Equal(t, "record", result.Fields[3].TypeValue)
+	assert.Equal(t, 3, len(result.Fields[3].Fields))
+	assert.Equal(t, "item", result.Fields[3].Fields[1].Name)
+	assert.Equal(t, 1, len(result.Fields[3].Fields[2].Fields))
+	assert.Equal(t, "item2", result.Fields[3].Fields[2].Fields[0].Name)
+}
+
+//nolint
 func TestSchemas(t *testing.T) {
 	type testItem struct {
 		schema  string

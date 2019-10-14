@@ -47,7 +47,7 @@ func parseUnionField(field *schema.Field, record map[string]interface{}) (interf
 		LogicalType: field.LogicalType,
 		// TODO: support record type in unions
 		// same as before, I think this should be something like searchedType["fields"]
-		Fields: []interface{}{},
+		Fields: []*schema.Field{},
 		// only the first item of the union can have default
 		HasDefault: false,
 	}

@@ -166,7 +166,7 @@ func getPrimitiveField(fieldType string, hasDefault bool, defaultValue interface
 		Name:         "test",
 		Type:         types.Primitive,
 		TypeValue:    fieldType,
-		Fields:       []interface{}{},
+		Fields:       []*schema.Field{},
 		HasDefault:   hasDefault,
 		DefaultValue: defaultValue,
 	}
