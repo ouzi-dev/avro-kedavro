@@ -5,6 +5,7 @@ import (
 
 	"github.com/linkedin/goavro"
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
 func parseUnionField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
@@ -39,7 +40,7 @@ func parseUnionField(field *schema.Field, record map[string]interface{}) (interf
 	searchedType := typeArray[1].(string)
 	unionField := &schema.Field{
 		Name:      field.Name,
-		Type:      schema.Primitive,
+		Type:      types.Primitive,
 		TypeValue: searchedType,
 		// TODO: support logicaltypes in unions, for now leave it
 		// this is wrong we should here searchedType["logicaltype"]

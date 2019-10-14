@@ -2,8 +2,10 @@ package kedavro
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
+	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
 type valueParserFunction func(field *schema.Field, value interface{}) (interface{}, error)
@@ -12,7 +14,7 @@ func parseRecord(field *schema.Field, record map[string]interface{}) (interface{
 	avroRecord := map[string]interface{}{}
 
 	for _, v := range field.Fields {
-		field, err := schema.ParseSchemaField(v)
+		field, err := schema.ParseSchemaField(v, field.Opts)
 
 		if err != nil {
 			return nil, err
@@ -33,9 +35,9 @@ func parseField(field *schema.Field, record map[string]interface{}) (interface{}
 	var result interface{}
 	var err error
 	switch field.Type {
-	case schema.Primitive:
+	case types.Primitive:
 		result, err = parsePrimitiveField(field, record)
-	case schema.Union:
+	case types.Union:
 		// Union
 		result, err = parseUnionField(field, record)
 	default:
@@ -56,23 +58,23 @@ func parsePrimitiveField(field *schema.Field, record map[string]interface{}) (in
 	fieldType := field.TypeValue.(string)
 
 	switch fieldType {
-	case stringType:
+	case types.StringType:
 		parsedValue, err = parseStringField(field, record)
-	case nilType:
+	case types.NilType:
 		parsedValue, err = parseNilField(field, record)
-	case boolType:
+	case types.BoolType:
 		parsedValue, err = parseBoolField(field, record)
-	case bytesType:
+	case types.BytesType:
 		parsedValue, err = parseBytesField(field, record)
-	case floatType:
+	case types.FloatType:
 		parsedValue, err = parseFloatField(field, record)
-	case doubleType:
+	case types.DoubleType:
 		parsedValue, err = parseDoubleField(field, record)
-	case longType:
+	case types.LongType:
 		parsedValue, err = parseLongField(field, record)
-	case intType:
+	case types.IntType:
 		parsedValue, err = parseIntField(field, record)
-	case recordType:
+	case types.RecordType:
 		parsedValue, err = parseRecordField(field, record)
 	default:
 		return nil, fmt.Errorf("type \"%s\" not supported yet", fieldType)
@@ -99,6 +101,13 @@ func parseBoolValue(field *schema.Field, value interface{}) (interface{}, error)
 	v, ok := value.(bool)
 
 	if !ok {
+		if field.Opts.IsStringToBool {
+			f, err := getStringAs(value, types.BoolType)
+			if err != nil {
+				return nil, fmt.Errorf("parsing string in field \"%s\" error: %v", field.Name, err)
+			}
+			return f, nil
+		}
 		return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"boolean\"", value, field.Name)
 	}
 
@@ -128,6 +137,13 @@ func parseFloatValue(field *schema.Field, value interface{}) (interface{}, error
 	v, ok := value.(float64)
 
 	if !ok {
+		if field.Opts.IsStringToNumber {
+			f, err := getStringAs(value, types.FloatType)
+			if err != nil {
+				return nil, fmt.Errorf("parsing string in field \"%s\" error: %v", field.Name, err)
+			}
+			return f, nil
+		}
 		return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"float\"", value, field.Name)
 	}
 
@@ -142,6 +158,13 @@ func parseDoubleValue(field *schema.Field, value interface{}) (interface{}, erro
 	v, ok := value.(float64)
 
 	if !ok {
+		if field.Opts.IsStringToNumber {
+			f, err := getStringAs(value, types.DoubleType)
+			if err != nil {
+				return nil, fmt.Errorf("parsing string in field \"%s\" error: %v", field.Name, err)
+			}
+			return f, nil
+		}
 		return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"double\"", value, field.Name)
 	}
 
@@ -153,13 +176,34 @@ func parseDoubleField(field *schema.Field, record map[string]interface{}) (inter
 }
 
 func parseLongValue(field *schema.Field, value interface{}) (interface{}, error) {
+	var result int64
+
 	v, ok := value.(float64)
 
 	if !ok {
-		return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"long\"", value, field.Name)
+		if field.Opts.IsStringToNumber {
+			f, err := getStringAs(value, types.LongType)
+			if err != nil {
+				return nil, fmt.Errorf("parsing string in field \"%s\" error: %v", field.Name, err)
+			}
+			result = f.(int64)
+		} else {
+			return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"long\"", value, field.Name)
+		}
+	} else {
+		result = int64(v)
 	}
 
-	return int64(v), nil
+	if field.Opts.IsTimestampToMillis && field.LogicalType == types.TimestampMillis {
+		t := time.Unix(result, 0)
+		result = t.UnixNano() / int64(time.Millisecond)
+	}
+	if field.Opts.IsTimestampToMicros && field.LogicalType == types.TimestampMicros {
+		t := time.Unix(result, 0)
+		result = t.UnixNano() / int64(time.Microsecond)
+	}
+
+	return result, nil
 }
 
 func parseLongField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
@@ -170,6 +214,13 @@ func parseIntValue(field *schema.Field, value interface{}) (interface{}, error) 
 	v, ok := value.(float64)
 
 	if !ok {
+		if field.Opts.IsStringToNumber {
+			f, err := getStringAs(value, types.IntType)
+			if err != nil {
+				return nil, fmt.Errorf("parsing string in field \"%s\" error: %v", field.Name, err)
+			}
+			return f, nil
+		}
 		return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"int\"", value, field.Name)
 	}
 
