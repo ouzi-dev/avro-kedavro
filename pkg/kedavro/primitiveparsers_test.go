@@ -8,9 +8,9 @@ import (
 )
 
 func TestNilPrimitiveType(t *testing.T) {
-	fieldNoDefault := getField(nilType, false, nil)
-	fieldDefaultValue := getField(nilType, true, nil)
-	fieldDefaultWrongValue := getField(nilType, true, "bleh")
+	fieldNoDefault := getPrimitiveField(nilType, false, nil)
+	fieldDefaultValue := getPrimitiveField(nilType, true, nil)
+	fieldDefaultWrongValue := getPrimitiveField(nilType, true, "bleh")
 
 	recordWithNullValue := getRecord("test", nil)
 	recordWithValueWrongType := getRecord("test", 1234)
@@ -158,7 +158,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 
 }
 
-func getField(fieldType string, hasDefault bool, defaultValue interface{}) *schema.Field {
+func getPrimitiveField(fieldType string, hasDefault bool, defaultValue interface{}) *schema.Field {
 	return &schema.Field{
 		Name:         "test",
 		Type:         schema.Primitive,
@@ -184,9 +184,9 @@ type testItem struct {
 }
 
 func getTestBatch(test testType) []testItem {
-	fieldNoDefault := getField(test.fieldType, false, nil)
-	fieldDefaultValue := getField(test.fieldType, true, test.defaultValue)
-	fieldDefaultWrongValue := getField(test.fieldType, true, test.wrongValue)
+	fieldNoDefault := getPrimitiveField(test.fieldType, false, nil)
+	fieldDefaultValue := getPrimitiveField(test.fieldType, true, test.defaultValue)
+	fieldDefaultWrongValue := getPrimitiveField(test.fieldType, true, test.wrongValue)
 
 	recordWithValue := getRecord("test", test.validValue)
 	recordWithValueWrongType := getRecord("test", test.wrongValue)

@@ -71,30 +71,3 @@ func parseUnionField(field *schema.Field, record map[string]interface{}) (interf
 
 	return goavro.Union(searchedType, parsedValue), nil
 }
-
-func GetStringType(t interface{}) (string, error) {
-	switch v := t.(type) {
-	case nil:
-		return nilType, nil
-	case bool:
-		return boolType, nil
-	case []byte:
-		return bytesType, nil
-	case string:
-		return stringType, nil
-	case int32:
-		return intType, nil
-	case int64:
-		return longType, nil
-	case float32:
-		return floatType, nil
-	case float64:
-		return doubleType, nil
-	case []interface{}:
-		return arrayType, nil
-	case map[string]interface{}:
-		return recordType, nil
-	default:
-		return "", fmt.Errorf("unknow type %v for \"%v\"", v, t)
-	}
-}
