@@ -49,16 +49,12 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 	if !ok || len(name) == 0 {
 		return nil, fmt.Errorf("field name is required: %v", f)
 	}
-
 	typeValue, ok := fieldMap["type"]
 	if !ok || typeValue == nil {
 		return nil, fmt.Errorf("field type is required: %v", f)
 	}
-
 	defaultValue, hasDefault := fieldMap["default"]
-
 	var fieldType FieldType
-
 	switch t := typeValue.(type) {
 	case string:
 		fieldType = Primitive
@@ -71,9 +67,7 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 	default:
 		return nil, fmt.Errorf("unknown field type %v in: %v", t, f)
 	}
-
 	var fields []interface{}
-
 	mapFieldsValue, ok := fieldMap["fields"]
 	if !ok {
 		fields = []interface{}{}
@@ -83,7 +77,6 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 			return nil, fmt.Errorf("fields has to be an array: %v", mapFieldsValue)
 		}
 	}
-
 	var logicalType string
 	logicalTypeValue, ok := fieldMap["logicalType"]
 	if !ok {
@@ -94,7 +87,6 @@ func ParseSchemaField(f interface{}) (*Field, error) {
 			return nil, fmt.Errorf("logicaltype has to be a string, but it's current value is: %v", logicalTypeValue)
 		}
 	}
-
 	return &Field{
 		Name:         name,
 		Type:         fieldType,

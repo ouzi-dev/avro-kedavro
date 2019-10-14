@@ -11,6 +11,7 @@ import (
 
 const testSchema = "../../resources/test.avsc"
 
+//nolint
 var spellBytes = []byte("alohomora")
 
 const test1 = `
@@ -50,7 +51,7 @@ func TestParser(t *testing.T) {
 	schema, err := ioutil.ReadFile(testSchema)
 	assert.NoError(t, err)
 
-	p, err := NewParser(string(schema[:]))
+	p, err := NewParser(string(schema))
 	assert.NoError(t, err)
 
 	result, err := p.Parse([]byte(test1))
@@ -62,7 +63,7 @@ func TestParser(t *testing.T) {
 	textual, err := codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
 
-	fmt.Println(string(textual[:]))
+	fmt.Println(string(textual))
 
 	result, err = p.Parse([]byte(test2))
 	assert.NoError(t, err)
@@ -73,5 +74,5 @@ func TestParser(t *testing.T) {
 	textual, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
 
-	fmt.Println(string(textual[:]))
+	fmt.Println(string(textual))
 }

@@ -66,14 +66,14 @@ const jsonWithRecordDifferentFields = `
 }
 `
 
-func getJsonAsNative(jsonString string, t *testing.T) map[string]interface{} {
+func getJSONAsNative(jsonString string, t *testing.T) map[string]interface{} {
 	jsonMap := map[string]interface{}{}
 	err := json.Unmarshal([]byte(jsonString), &jsonMap)
 	assert.NoError(t, err)
 	return jsonMap
 }
 
-func getFieldFromJson(jsonString string, t *testing.T) *schema.Field {
+func getFieldFromJSON(jsonString string, t *testing.T) *schema.Field {
 	jsonMap := map[string]interface{}{}
 	err := json.Unmarshal([]byte(jsonString), &jsonMap)
 	assert.NoError(t, err)
@@ -91,39 +91,39 @@ func TestRecordType(t *testing.T) {
 	}
 
 	tests := []testItem{
-		testItem{
-			field:    getFieldFromJson(recordEmptyFields, t),
-			record:   getJsonAsNative(jsonWithRecord, t),
+		{
+			field:    getFieldFromJSON(recordEmptyFields, t),
+			record:   getJSONAsNative(jsonWithRecord, t),
 			isError:  false,
 			expected: expectedRecordEmpty,
 		},
-		testItem{
-			field:    getFieldFromJson(recordNoFields, t),
-			record:   getJsonAsNative(jsonWithRecord, t),
+		{
+			field:    getFieldFromJSON(recordNoFields, t),
+			record:   getJSONAsNative(jsonWithRecord, t),
 			isError:  false,
 			expected: expectedRecordEmpty,
 		},
-		testItem{
-			field:    getFieldFromJson(recordEmptyFields, t),
-			record:   getJsonAsNative(jsonNoRecord, t),
+		{
+			field:    getFieldFromJSON(recordEmptyFields, t),
+			record:   getJSONAsNative(jsonNoRecord, t),
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(recordNoFields, t),
-			record:   getJsonAsNative(jsonNoRecord, t),
+		{
+			field:    getFieldFromJSON(recordNoFields, t),
+			record:   getJSONAsNative(jsonNoRecord, t),
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
-			field:    getFieldFromJson(recordWithFields, t),
-			record:   getJsonAsNative(jsonWithRecord, t),
+		{
+			field:    getFieldFromJSON(recordWithFields, t),
+			record:   getJSONAsNative(jsonWithRecord, t),
 			isError:  false,
 			expected: expectedRecordWithFields,
 		},
-		testItem{
-			field:    getFieldFromJson(recordWithFields, t),
-			record:   getJsonAsNative(jsonWithRecordDifferentFields, t),
+		{
+			field:    getFieldFromJSON(recordWithFields, t),
+			record:   getJSONAsNative(jsonWithRecordDifferentFields, t),
 			isError:  true,
 			expected: nil,
 		},

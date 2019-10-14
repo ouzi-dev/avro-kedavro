@@ -12,8 +12,8 @@ const (
 	recordType = "record"
 
 	// not supported yet:
-	arrayType = "array"
-	enumType  = "enum"
-	fixedType = "fixed"
-	mapType   = "map"
+//	arrayType = "array"
+//	enumType  = "enum"
+//	fixedType = "fixed"
+//	mapType   = "map"
 )

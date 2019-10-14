@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint
 func TestNilPrimitiveType(t *testing.T) {
 	fieldNoDefault := getPrimitiveField(nilType, false, nil)
 	fieldDefaultValue := getPrimitiveField(nilType, true, nil)
@@ -17,55 +18,55 @@ func TestNilPrimitiveType(t *testing.T) {
 	recordWithNoValue := getRecord("bleh", nil)
 
 	tests := []testItem{
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithNullValue,
 			isError:  false,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithValueWrongType,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithNoValue,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithNullValue,
 			isError:  false,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithValueWrongType,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithNoValue,
 			isError:  false,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithNullValue,
 			isError:  false,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithValueWrongType,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithNoValue,
 			isError:  true,
@@ -84,9 +85,10 @@ func TestNilPrimitiveType(t *testing.T) {
 	}
 }
 
+//nolint
 func TestParsePrimitiveFields(t *testing.T) {
 	tests := []testType{
-		testType{
+		{
 			fieldType:            stringType,
 			validValue:           "testString",
 			defaultValue:         "defaultValue",
@@ -94,7 +96,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   "testString",
 			expectedDefaultValue: "defaultValue",
 		},
-		testType{
+		{
 			fieldType:            boolType,
 			validValue:           true,
 			defaultValue:         true,
@@ -102,7 +104,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   true,
 			expectedDefaultValue: true,
 		},
-		testType{
+		{
 			fieldType:            bytesType,
 			validValue:           "testString",
 			defaultValue:         "defaultValue",
@@ -110,7 +112,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   []byte("testString"),
 			expectedDefaultValue: []byte("defaultValue"),
 		},
-		testType{
+		{
 			fieldType:            floatType,
 			validValue:           float64(12345.67),
 			defaultValue:         float64(76543.21),
@@ -118,7 +120,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   float32(12345.67),
 			expectedDefaultValue: float32(76543.21),
 		},
-		testType{
+		{
 			fieldType:            doubleType,
 			validValue:           float64(4.94e-321),
 			defaultValue:         float64(3.95e-321),
@@ -126,7 +128,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   float64(4.94e-321),
 			expectedDefaultValue: float64(3.95e-321),
 		},
-		testType{
+		{
 			fieldType:            longType,
 			validValue:           float64(42949672951234),
 			defaultValue:         float64(52949672951234),
@@ -134,7 +136,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   int64(42949672951234),
 			expectedDefaultValue: int64(52949672951234),
 		},
-		testType{
+		{
 			fieldType:            intType,
 			validValue:           float64(23456),
 			defaultValue:         float64(65432),
@@ -142,7 +144,7 @@ func TestParsePrimitiveFields(t *testing.T) {
 			expectedValidValue:   int32(23456),
 			expectedDefaultValue: int32(65432),
 		},
-		testType{
+		{
 			fieldType:            intType,
 			validValue:           float64(23456),
 			defaultValue:         float64(65432),
@@ -183,6 +185,7 @@ type testItem struct {
 	expected interface{}
 }
 
+//nolint
 func getTestBatch(test testType) []testItem {
 	fieldNoDefault := getPrimitiveField(test.fieldType, false, nil)
 	fieldDefaultValue := getPrimitiveField(test.fieldType, true, test.defaultValue)
@@ -194,73 +197,73 @@ func getTestBatch(test testType) []testItem {
 	recordWithNullValue := getRecord("test", nil)
 
 	tests := []testItem{
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithValue,
 			isError:  false,
 			expected: test.expectedValidValue,
 		},
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithValueWrongType,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithNoValue,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldNoDefault,
 			record:   recordWithNullValue,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithValue,
 			isError:  false,
 			expected: test.expectedValidValue,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithValueWrongType,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithNoValue,
 			isError:  false,
 			expected: test.expectedDefaultValue,
 		},
-		testItem{
+		{
 			field:    fieldDefaultValue,
 			record:   recordWithNullValue,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithValue,
 			isError:  false,
 			expected: test.expectedValidValue,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithValueWrongType,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithNoValue,
 			isError:  true,
 			expected: nil,
 		},
-		testItem{
+		{
 			field:    fieldDefaultWrongValue,
 			record:   recordWithNullValue,
 			isError:  true,

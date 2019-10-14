@@ -75,7 +75,7 @@ func parsePrimitiveField(field *schema.Field, record map[string]interface{}) (in
 	case recordType:
 		parsedValue, err = parseRecordField(field, record)
 	default:
-		return nil, fmt.Errorf("type \"%s\" not supported yet...", fieldType)
+		return nil, fmt.Errorf("type \"%s\" not supported yet", fieldType)
 	}
 
 	return parsedValue, err
