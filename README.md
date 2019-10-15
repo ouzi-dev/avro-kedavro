@@ -45,7 +45,7 @@ a library to parse raw json to avro with magic!
     * Only the first record has the id as `long`
     * The  schema expects the timestamp as a `long` with milliseconds, but none of the reports is correct: or they don't have milliseconds, or it's a `string` instead of a `long`
     
-* We could try to implement an specific solution for each record, but what happens when we start dealing with 10 different types? And with 100? And even more, what if we want change some schema? Changing a schema would mean to go through all the parser we build for specific "events". So we need some kind of magic where we have:
+* We could try to implement an specific solution for each record, but what happens when we start dealing with 10 different types? And with 100? And even more, what if we want to change some schemas? Changing a schema would mean to go through all the parsers we buit for specific "events". So we need some kind of magic where we have:
     * avro schema
     * JSON record
     * Some rules like: switch strings to numbers, or switch timestamps to timestamps with milliseconds, ...
