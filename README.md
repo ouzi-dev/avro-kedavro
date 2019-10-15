@@ -142,8 +142,8 @@ func ParseToJSONAvro() error {
 
 * `WithStringToNumber()` will try to parse strings as numbers: `{"test": "1234.56"}` => `{"test": 1234.56}`
 * `WithStringToBool()` will try to parse strings as booleans: `{"test": "False"}` => `{"test": false}`
-* `WithTimestampToMillis()` will add milliseconds to timestamps, only works for `logicalType="timestamp-millis` fields: `{"test": 1571128870}` => `{"test": 1571128870000}`
-* `WithTimestampToMicros()` will add microseconds to timestamps, only works for `logicalType="timestamp-micros` fields: `{"test": 1571128870}` => `{"test": 1571128870000000}`
+* `WithTimestampToMillis()` will add milliseconds to timestamps, only works for `logicalType="timestamp-millis"` fields: `{"test": 1571128870}` => `{"test": 1571128870000}`
+* `WithTimestampToMicros()` will add microseconds to timestamps, only works for `logicalType="timestamp-micros"` fields: `{"test": 1571128870}` => `{"test": 1571128870000000}`
 
 ### Supported types
 
