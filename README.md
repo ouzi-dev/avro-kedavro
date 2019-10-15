@@ -39,7 +39,7 @@ a library to parse raw json to avro with magic!
     * `{"name": "Ron", "id": "98765", "timestamp": 1571128870}`
     * `{"name": "Hermione", "id": "56784", "timestamp": "1571128870000"}`
 
-    Any of these reports is valid for the schema we have:
+    None of these reports are valid for the schema we have:
 
     * All of them will fail just with the `name` field, since the union in JSON-avro should be: `"name": {"string": "..."}`
     * Only the first record has the id as `long`
