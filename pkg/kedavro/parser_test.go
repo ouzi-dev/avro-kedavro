@@ -1,8 +1,6 @@
 package kedavro
 
 import (
-	"fmt"
-	"io/ioutil"
 	"testing"
 
 	"github.com/linkedin/goavro/v2"
@@ -13,6 +11,101 @@ const testSchema = "../../resources/test.avsc"
 
 //nolint
 var spellBytes = []byte("alohomora")
+
+const schema = `
+{
+	"name": "Voldemort",
+	"type": "record",
+	"namespace": "com.avro.kedavro",
+	"fields": [
+	  {
+		"name": "name",
+		"type": [
+		  "null",
+		  "string"
+		],
+		"default": null
+	  },
+	  {
+		"name": "curse",
+		"type": "string"
+	  },
+	  {
+		"name": "house",
+		"type": "string",
+		"default": "slytherin"
+	  },
+	  {
+		"name": "wand",
+		"type": [
+		  "null",
+		  "string"
+		],
+		"default": null
+	  },
+	  {
+		"name": "muggle",
+		"type": "null",
+		"default": null
+	  },
+	  {
+		"name": "has_broom",
+		"type": "boolean",
+		"default": true
+	  },
+	  {
+		"name": "spell_bytes",
+		"type": "bytes"
+	  },
+	  {
+		"name": "spell_performance",
+		"type": "float",
+		"default": 50.05
+	  },
+	  {
+		"name": "spell_affinity",
+		"type": "double",
+		"default": 324235235.5235325
+	  },
+	  {
+		"name": "good_spells",
+		"type": "int",
+		"default": 0
+	  },
+	  {
+		"name": "evil_spells",
+		"type": "long",
+		"default": 3
+	  },
+	  {
+		"name": "muggles_killed",
+		"type": [
+		  "null",
+		  "long"
+		],
+		"default": null
+	  },
+	  {
+		"name": "testing",
+		"type": "record",
+		"fields": [
+		  {
+			"name": "name",
+			"type": [
+			  "null",
+			  "string"
+			],
+			"default": null
+		  },
+		  {
+			"name": "curse",
+			"type": "string"
+		  }
+		]
+	  }
+	]
+  }
+`
 
 const test1 = `
 {
@@ -47,10 +140,8 @@ const test2 = `
 }
 `
 
-func TestParser(t *testing.T) {
-	schema, err := ioutil.ReadFile(testSchema)
-	assert.NoError(t, err)
-
+// basically the result of our parser has to be ok for goavro!
+func TestParserNoDefaults(t *testing.T) {
 	p, err := NewParser(string(schema))
 	assert.NoError(t, err)
 
@@ -60,19 +151,20 @@ func TestParser(t *testing.T) {
 	codec, err := goavro.NewCodec(string(schema))
 	assert.NoError(t, err)
 
-	textual, err := codec.TextualFromNative(nil, result)
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+}
+
+func TestParserDefaults(t *testing.T) {
+	p, err := NewParser(string(schema))
 	assert.NoError(t, err)
 
-	fmt.Println(string(textual))
-
-	result, err = p.Parse([]byte(test2))
+	result, err := p.Parse([]byte(test2))
 	assert.NoError(t, err)
 
-	codec, err = goavro.NewCodec(string(schema))
+	codec, err := goavro.NewCodec(string(schema))
 	assert.NoError(t, err)
 
-	textual, err = codec.TextualFromNative(nil, result)
+	_, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
-
-	fmt.Println(string(textual))
 }
