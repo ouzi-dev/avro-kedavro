@@ -7,12 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const testSchema = "../../resources/test.avsc"
-
 //nolint
 var spellBytes = []byte("alohomora")
 
-const schema = `
+const parserSchema = `
 {
 	"name": "Voldemort",
 	"type": "record",
@@ -142,13 +140,13 @@ const test2 = `
 
 // basically the result of our parser has to be ok for goavro!
 func TestParserNoDefaults(t *testing.T) {
-	p, err := NewParser(string(schema))
+	p, err := NewParser(string(parserSchema))
 	assert.NoError(t, err)
 
 	result, err := p.Parse([]byte(test1))
 	assert.NoError(t, err)
 
-	codec, err := goavro.NewCodec(string(schema))
+	codec, err := goavro.NewCodec(string(parserSchema))
 	assert.NoError(t, err)
 
 	_, err = codec.TextualFromNative(nil, result)
@@ -156,13 +154,13 @@ func TestParserNoDefaults(t *testing.T) {
 }
 
 func TestParserDefaults(t *testing.T) {
-	p, err := NewParser(string(schema))
+	p, err := NewParser(string(parserSchema))
 	assert.NoError(t, err)
 
 	result, err := p.Parse([]byte(test2))
 	assert.NoError(t, err)
 
-	codec, err := goavro.NewCodec(string(schema))
+	codec, err := goavro.NewCodec(string(parserSchema))
 	assert.NoError(t, err)
 
 	_, err = codec.TextualFromNative(nil, result)
