@@ -45,7 +45,7 @@ a library to parse raw json to avro with magic!
     * Only the first record has the id as `long`
     * The  schema expects the timestamp as a `long` with milliseconds, but none of the reports is correct: or they don't have milliseconds, or it's a `string` instead of a `long`
     
-* We could try to implement an specific solution for each record, but what happens when we start dealing with 10 different types? And with 100? And even more, what if we want to change some schemas? Changing a schema would mean to go through all the parsers we buit for specific "events". So we need some kind of magic where we have:
+* We could try to implement an specific solution for each record, but what happens when we start dealing with 10 different types? And with 100? And even more, what if we want to change some schemas? Changing a schema would mean to go through all the parsers we built for specific "events". So we need some kind of magic where we have:
     * avro schema
     * JSON record
     * Some rules like: switch strings to numbers, or switch timestamps to timestamps with milliseconds, ...
@@ -142,8 +142,8 @@ func ParseToJSONAvro() error {
 
 * `WithStringToNumber()` will try to parse strings as numbers: `{"test": "1234.56"}` => `{"test": 1234.56}`
 * `WithStringToBool()` will try to parse strings as booleans: `{"test": "False"}` => `{"test": false}`
-* `WithTimestampToMillis()` will add milliseconds to timestamps, only works for `logicalType="timestamp-millis"` fields: `{"test": 1571128870}` => `{"test": 1571128870000}`
-* `WithTimestampToMicros()` will add microseconds to timestamps, only works for `logicalType="timestamp-micros"` fields: `{"test": 1571128870}` => `{"test": 1571128870000000}`
+* `WithTimestampToMillis()` will add milliseconds to timestamps, only works for `logicalType="timestamp-millis"` fields: `{"test": 1571128870}` => `{"test": time.Time(1571128870000)}`
+* `WithTimestampToMicros()` will add microseconds to timestamps, only works for `logicalType="timestamp-micros"` fields: `{"test": 1571128870}` => `{"test": time.Time(1571128870000000)}`
 
 ### Supported types
 
@@ -184,3 +184,12 @@ Only unions with two elements where the first one is null and the second is a su
 | `null`             | `long`                   |
 | `null`             | `int`                    |
 | `null`             | `string`                 |
+
+### Supported Logical Types
+
+For now only two logical types are supported:
+
+| Avro               | Go                       |
+| ------------------ | ------------------------ |
+| `timestamp-millis` | `time.Time`              |
+| `timestamp-micros` | `time.Time`              |
