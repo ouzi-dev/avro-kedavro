@@ -188,13 +188,18 @@ func parseLongValue(field *schema.Field, value interface{}) (interface{}, error)
 		result = int64(v)
 	}
 
-	if field.Opts.IsTimestampToMillis && field.LogicalType == types.TimestampMillis {
-		t := time.Unix(result, 0)
-		result = t.UnixNano() / int64(time.Millisecond)
-	}
-	if field.Opts.IsTimestampToMicros && field.LogicalType == types.TimestampMicros {
-		t := time.Unix(result, 0)
-		result = t.UnixNano() / int64(time.Microsecond)
+	if field.LogicalType == types.TimestampMillis || field.LogicalType == types.TimestampMicros {
+		// now we have to parse the long to a time.Time, if we have any of the flags on it's easy
+		if field.Opts.IsTimestampToMillis || field.Opts.IsTimestampToMicros {
+			return time.Unix(result, 0), nil
+		}
+		// now, if we don't change timestamp to millis or micros we need to do the time.Time correcly
+		switch field.LogicalType {
+		case types.TimestampMillis:
+			return time.Unix(0, result*int64(time.Millisecond)), nil
+		case types.TimestampMicros:
+			return time.Unix(0, result*int64(time.Microsecond)), nil
+		}
 	}
 
 	return result, nil

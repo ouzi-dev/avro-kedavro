@@ -3,6 +3,7 @@ package kedavro
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -270,7 +271,7 @@ func TestTimestampToMillis(t *testing.T) {
 	`
 
 	expected := map[string]interface{}{
-		"test": int64(1571057118000),
+		"test": time.Unix(0, 1571057118*int64(time.Second)),
 	}
 
 	parser, err := NewParser(schema, WithTimestampToMillis())
@@ -285,7 +286,7 @@ func TestTimestampToMillis(t *testing.T) {
 		`
 
 	expected = map[string]interface{}{
-		"test": int64(1571057118000),
+		"test": time.Unix(0, 1571057118*int64(time.Second)),
 	}
 
 	parser, err = NewParser(schema, WithTimestampToMillis(), WithStringToNumber())
@@ -295,15 +296,32 @@ func TestTimestampToMillis(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
+	// timestamp with millis and no conversion
 	jsonRecord = `
-		{"test": 1571057118}
+		{"test": 1571057118123}
 		`
 
 	expected = map[string]interface{}{
-		"test": int64(1571057118),
+		"test": time.Unix(0, 1571057118123*int64(time.Millisecond)),
 	}
 
 	parser, err = NewParser(schema)
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	// timestamp with microseconds and conversion from string
+	jsonRecord = `
+		{"test": "1571057118123"}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(0, 1571057118123*int64(time.Millisecond)),
+	}
+
+	parser, err = NewParser(schema, WithStringToNumber())
 	assert.NoError(t, err)
 
 	result, err = parser.Parse([]byte(jsonRecord))
@@ -344,28 +362,13 @@ func TestTimestampToMicros(t *testing.T) {
 	`
 
 	expected := map[string]interface{}{
-		"test": int64(1571057118),
+		"test": time.Unix(0, 1571057118*int64(time.Second)),
 	}
 
-	parser, err := NewParser(schema)
+	parser, err := NewParser(schema, WithTimestampToMicros())
 	assert.NoError(t, err)
 
 	result, err := parser.Parse([]byte(jsonRecord))
-	assert.NoError(t, err)
-	assert.True(t, reflect.DeepEqual(expected, result))
-
-	jsonRecord = `
-		{"test": 1571057118}
-		`
-
-	expected = map[string]interface{}{
-		"test": int64(1571057118000000),
-	}
-
-	parser, err = NewParser(schema, WithTimestampToMicros())
-	assert.NoError(t, err)
-
-	result, err = parser.Parse([]byte(jsonRecord))
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
@@ -374,10 +377,42 @@ func TestTimestampToMicros(t *testing.T) {
 		`
 
 	expected = map[string]interface{}{
-		"test": int64(1571057118000000),
+		"test": time.Unix(0, 1571057118*int64(time.Second)),
 	}
 
 	parser, err = NewParser(schema, WithTimestampToMicros(), WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	// timestamp with microseconds and no conversion
+	jsonRecord = `
+		{"test": 1571057118123456}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(0, 1571057118123456*int64(time.Microsecond)),
+	}
+
+	parser, err = NewParser(schema)
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	// timestamp with microseconds and conversion from string
+	jsonRecord = `
+		{"test": "1571057118123456"}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(0, 1571057118123456*int64(time.Microsecond)),
+	}
+
+	parser, err = NewParser(schema, WithStringToNumber())
 	assert.NoError(t, err)
 
 	result, err = parser.Parse([]byte(jsonRecord))
