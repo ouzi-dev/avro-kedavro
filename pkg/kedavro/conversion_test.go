@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/linkedin/goavro/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -266,6 +267,9 @@ func TestTimestampToMillis(t *testing.T) {
 	}
 	`
 
+	codec, err := goavro.NewCodec(schema)
+	assert.NoError(t, err)
+
 	jsonRecord := `
 	{"test": 1571057118}
 	`
@@ -281,6 +285,9 @@ func TestTimestampToMillis(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
 	jsonRecord = `
 		{"test": "1571057118"}
 		`
@@ -295,6 +302,9 @@ func TestTimestampToMillis(t *testing.T) {
 	result, err = parser.Parse([]byte(jsonRecord))
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
 
 	// timestamp with millis and no conversion
 	jsonRecord = `
@@ -312,6 +322,9 @@ func TestTimestampToMillis(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
 	// timestamp with microseconds and conversion from string
 	jsonRecord = `
 		{"test": "1571057118123"}
@@ -327,6 +340,9 @@ func TestTimestampToMillis(t *testing.T) {
 	result, err = parser.Parse([]byte(jsonRecord))
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
 
 	jsonRecord = `
 		{"test": "aa1571057118"}
@@ -357,6 +373,9 @@ func TestTimestampToMicros(t *testing.T) {
 	}
 	`
 
+	codec, err := goavro.NewCodec(schema)
+	assert.NoError(t, err)
+
 	jsonRecord := `
 	{"test": 1571057118}
 	`
@@ -372,6 +391,9 @@ func TestTimestampToMicros(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
 	jsonRecord = `
 		{"test": "1571057118"}
 		`
@@ -386,6 +408,9 @@ func TestTimestampToMicros(t *testing.T) {
 	result, err = parser.Parse([]byte(jsonRecord))
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
 
 	// timestamp with microseconds and no conversion
 	jsonRecord = `
@@ -403,6 +428,9 @@ func TestTimestampToMicros(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
 	// timestamp with microseconds and conversion from string
 	jsonRecord = `
 		{"test": "1571057118123456"}
@@ -418,6 +446,9 @@ func TestTimestampToMicros(t *testing.T) {
 	result, err = parser.Parse([]byte(jsonRecord))
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
 
 	jsonRecord = `
 		{"test": "aa1571057118"}
