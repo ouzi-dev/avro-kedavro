@@ -288,7 +288,6 @@ func testPrimitiveField(t *testing.T, test testType) {
 	tests := getTestBatch(test)
 
 	for _, v := range tests {
-
 		var result interface{}
 		var err error
 

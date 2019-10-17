@@ -115,5 +115,4 @@ func getFieldsArray(fieldValue interface{}, opts types.Options) ([]*Field, error
 	}
 
 	return fields, nil
-
 }
