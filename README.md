@@ -193,3 +193,4 @@ For now only two logical types are supported:
 | ------------------ | ------------------------ |
 | `timestamp-millis` | `time.Time`              |
 | `timestamp-micros` | `time.Time`              |
+
