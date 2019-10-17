@@ -3,7 +3,7 @@
   "description": "__A library to parse raw json to avro with magic!__",
   "repository": {
     "type": "git",
-    "url": "https:git@github.com:ouzi-dev/avro-kedavro.git"
+    "url": "https://github.com/ouzi-dev/avro-kedavro.git"
   },
   "author": "belitre",
   "devDependencies": {
