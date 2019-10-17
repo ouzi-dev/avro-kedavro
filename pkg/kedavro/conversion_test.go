@@ -10,7 +10,6 @@ import (
 )
 
 func TestStringToFloat(t *testing.T) {
-
 	schema := `
 	{
 		"name": "Test",
@@ -52,7 +51,6 @@ func TestStringToFloat(t *testing.T) {
 }
 
 func TestStringToDouble(t *testing.T) {
-
 	schema := `
 	{
 		"name": "Test",
@@ -94,7 +92,6 @@ func TestStringToDouble(t *testing.T) {
 }
 
 func TestStringToLong(t *testing.T) {
-
 	schema := `
 	{
 		"name": "Test",
@@ -136,7 +133,6 @@ func TestStringToLong(t *testing.T) {
 }
 
 func TestStringToInt(t *testing.T) {
-
 	schema := `
 	{
 		"name": "Test",

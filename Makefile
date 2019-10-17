@@ -2,7 +2,7 @@
 BUILD_PATH = github.com/ouzi-dev/avro-kedavro
 
 HAS_GOLANCI_LINT := $(shell command -v golangci-lint;)
-GOLANGCI_LINT_VERSION := v1.18.0
+GOLANGCI_LINT_VERSION := v1.21.0
 
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
@@ -24,7 +24,7 @@ test: fmt lint
 .PHONY: lint
 lint: bootstrap 
 	@echo "lint target..."
-	@golangci-lint run --enable-all --disable lll ./...
+	@golangci-lint run --enable-all --disable lll,godox,wsl ./...
 
 .PHONY: bootstrap
 bootstrap:
