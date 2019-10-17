@@ -42,3 +42,14 @@ fmt:
 covhtml: test
 	@scripts/coverage.sh
 	@go tool cover -html=.cover/cover.out
+
+
+.PHONY: semantic-release
+semantic-release:
+	npm install
+	npx semantic-release
+
+.PHONY: semantic-release-dry-run
+semantic-release-dry-run:
+	npm install
+	npx semantic-release -d
