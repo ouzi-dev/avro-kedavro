@@ -299,3 +299,47 @@ func TestValidUnions(t *testing.T) {
 		}
 	}
 }
+
+//nolint
+func TestRecordAsType(t *testing.T) {
+	schema := `
+	{
+		"name": "Voldemort",
+		"type": "record",
+		"fields": [
+		  {
+			"name": "curse",
+			"type": "string"
+		  },
+		  {
+			"name": "house",
+			"type": {
+				"name": "test",
+				"type": "record",
+				"fields": [
+					{
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"name": "points",
+						"type": "long" 
+					}
+				]
+			}
+		  }
+		]
+	}
+	`
+
+	asJson := map[string]interface{}{}
+	err := json.Unmarshal([]byte(schema), &asJson)
+	assert.NoError(t, err)
+
+	result, err := ParseSchemaField(asJson, types.Options{})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(result.Fields))
+	assert.Equal(t, "house", result.Fields[1].Name)
+	assert.Equal(t, 2, len(result.Fields[1].Fields))
+	assert.Equal(t, "points", result.Fields[1].Fields[1].Name)
+}

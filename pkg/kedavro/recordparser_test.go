@@ -141,3 +141,66 @@ func TestRecordType(t *testing.T) {
 		assert.Equal(t, v.expected, result)
 	}
 }
+
+func TestRecordWithRecordAsType(t *testing.T) {
+	testJSONSchema := `
+	{
+		"name": "Voldemort",
+		"type": {
+			"name": "wizard",
+			"type": "record",
+			"fields": [
+				{
+					"name": "curse",
+					"type": "string"
+				},
+				{
+					"name": "house",
+					"type": {
+						"name": "test",
+						"type": "record",
+						"fields": [
+							{
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"name": "points",
+								"type": "int" 
+							}
+						]
+					}
+				}
+			]
+		}
+	}`
+
+	testJSONRecord := `
+	{
+		"Voldemort": {
+			"curse": "imperio", 
+			"house": {
+				"name": "slytherin",
+				"points": 1234
+			}
+		}
+	}
+	`
+
+	expected := map[string]interface{}{
+		"curse": "imperio",
+		"house": map[string]interface{}{
+			"name":   "slytherin",
+			"points": int32(1234),
+		},
+	}
+
+	field := getFieldFromJSON(testJSONSchema, t)
+
+	native := getJSONAsNative(testJSONRecord, t)
+
+	result, err := parseRecordField(field, native)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
