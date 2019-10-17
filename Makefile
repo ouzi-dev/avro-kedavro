@@ -24,7 +24,7 @@ test: fmt lint
 .PHONY: lint
 lint: bootstrap 
 	@echo "lint target..."
-	@golangci-lint run --enable-all --disable lll,godox,wsl ./...
+	@golangci-lint run --enable-all --disable lll,godox,wsl,funlen ./...
 
 .PHONY: bootstrap
 bootstrap:
@@ -46,10 +46,10 @@ covhtml: test
 
 .PHONY: semantic-release
 semantic-release:
-	npm install
+	npm ci
 	npx semantic-release
 
 .PHONY: semantic-release-dry-run
 semantic-release-dry-run:
-	npm install
+	npm ci
 	npx semantic-release -d

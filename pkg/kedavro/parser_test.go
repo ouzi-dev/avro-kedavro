@@ -100,6 +100,27 @@ const parserSchema = `
 			"type": "string"
 		  }
 		]
+	  },
+	  {
+		"name": "metadata",
+		"type": {
+			"name": "points",
+			"type": "record",
+			"fields": [
+				{
+					"name": "house",
+					"type": [
+					"null",
+					"string"
+					],
+					"default": null
+				},
+				{
+					"name": "points",
+					"type": "int"
+				}
+			]
+		}
 	  }
 	]
   }
@@ -122,6 +143,10 @@ const test1 = `
 	"testing": {
 		"name": "test",
 		"curse":"bleh"
+	},
+	"metadata": {
+		"house": "slytherin",
+		"points": 123
 	}
 }
 `
@@ -134,6 +159,9 @@ const test2 = `
 	"spell_performance": 89.67,
 	"testing": {
 		"curse":"bleh"
+	},
+	"metadata": {
+		"points": 123
 	}
 }
 `

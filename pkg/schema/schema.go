@@ -61,6 +61,9 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 		if err := validateUnionFields(name, t, defaultValue); err != nil {
 			return nil, err
 		}
+	case map[string]interface{}:
+		// ok since we just want json accepted by the schema... let's do some magic here
+		return getObjectType(fieldMap, t, opts)
 	default:
 		return nil, fmt.Errorf("unknown field type %v in: %v", t, f)
 	}
@@ -96,6 +99,12 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 		Opts:         opts,
 	}
 	return parsedField, nil
+}
+
+func getObjectType(parentField, childField map[string]interface{}, opts types.Options) (*Field, error) {
+	//now we just keep the name of the parent so...
+	childField["name"] = parentField["name"]
+	return ParseSchemaField(childField, opts)
 }
 
 func getFieldsArray(fieldValue interface{}, opts types.Options) ([]*Field, error) {
