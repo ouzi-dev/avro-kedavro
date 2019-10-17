@@ -1,6 +1,6 @@
 # avro-kedavro
 
-a library to parse raw json to avro with magic!
+A library to parse raw json to avro with magic!
 
 ## Why avro-kedavro?
 
