@@ -10,7 +10,7 @@ require (
 	github.com/gostaticanalysis/analysisutil v0.0.3 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/linkedin/goavro v2.1.0+incompatible
-	github.com/linkedin/goavro/v2 v2.9.6
+	github.com/linkedin/goavro/v2 v2.9.7
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/pelletier/go-toml v1.5.0 // indirect
