@@ -169,7 +169,7 @@ func parseDoubleField(field *schema.Field, record map[string]interface{}) (inter
 	return parseWithDefaultValue(field, record, parseDoubleValue)
 }
 
-func parseLongValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseLongValueAsNumber(field *schema.Field, value interface{}) (interface{}, error) {
 	var result int64
 
 	v, ok := value.(float64)
@@ -188,21 +188,47 @@ func parseLongValue(field *schema.Field, value interface{}) (interface{}, error)
 		result = int64(v)
 	}
 
-	if field.LogicalType == types.TimestampMillis || field.LogicalType == types.TimestampMicros {
-		// now we have to parse the long to a time.Time, if we have any of the flags on it's easy
-		if field.Opts.IsTimestampToMillis || field.Opts.IsTimestampToMicros {
-			return time.Unix(result, 0), nil
+	return result, nil
+}
+
+func parseLongValueAsTimestamp(field *schema.Field, value interface{}) (interface{}, error) {
+	// so timestamp is a bit different... we need to try first, and if we get an error we need to check if we need to format the date
+	v, err := parseLongValueAsNumber(field, value)
+
+	if err != nil {
+		if field.Opts.IsFormatDateTime {
+			f, ok := value.(string)
+			if !ok {
+				// we can't parse as number and it's not a string so... error
+				return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"long\" or \"string\"", value, field.Name)
+			}
+			t, err := time.Parse(field.Opts.DateTimeFormat, f)
+			if err != nil {
+				return nil, fmt.Errorf("error while parsing value \"%v\" in field \"%s\" as date with format \"%s\"", value, field.Name, field.Opts.DateTimeFormat)
+			}
+			return t, nil
 		}
-		// now, if we don't change timestamp to millis or micros we need to do the time.Time correcly
-		switch field.LogicalType {
-		case types.TimestampMillis:
-			return time.Unix(0, result*int64(time.Millisecond)), nil
-		case types.TimestampMicros:
-			return time.Unix(0, result*int64(time.Microsecond)), nil
-		}
+		return nil, err
 	}
 
-	return result, nil
+	result := v.(int64)
+
+	// now we have to parse the long to a time.Time, if we have any of the flags on it's easy
+	if field.Opts.IsTimestampToMillis || field.Opts.IsTimestampToMicros {
+		return time.Unix(result, 0), nil
+	}
+
+	if field.LogicalType == types.TimestampMillis {
+		return time.Unix(0, result*int64(time.Millisecond)), nil
+	}
+	return time.Unix(0, result*int64(time.Microsecond)), nil
+}
+
+func parseLongValue(field *schema.Field, value interface{}) (interface{}, error) {
+	if field.LogicalType == types.TimestampMillis || field.LogicalType == types.TimestampMicros {
+		return parseLongValueAsTimestamp(field, value)
+	}
+	return parseLongValueAsNumber(field, value)
 }
 
 func parseLongField(field *schema.Field, record map[string]interface{}) (interface{}, error) {

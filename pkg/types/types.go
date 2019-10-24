@@ -13,4 +13,6 @@ type Options struct {
 	IsStringToBool      bool
 	IsTimestampToMillis bool
 	IsTimestampToMicros bool
+	IsFormatDateTime    bool
+	DateTimeFormat      string
 }

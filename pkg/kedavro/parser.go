@@ -35,6 +35,13 @@ func WithTimestampToMicros() ParserOption {
 	return func(o *types.Options) { o.IsTimestampToMicros = true }
 }
 
+func WithDateTimeFormat(format string) ParserOption {
+	return func(o *types.Options) {
+		o.IsFormatDateTime = true
+		o.DateTimeFormat = format
+	}
+}
+
 func NewParser(schemaString string, opts ...ParserOption) (Parser, error) {
 	s := map[string]interface{}{}
 

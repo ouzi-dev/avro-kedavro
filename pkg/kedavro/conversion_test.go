@@ -175,7 +175,6 @@ func TestStringToInt(t *testing.T) {
 
 //nolint
 func TestStringToBool(t *testing.T) {
-
 	schema := `
 	{
 		"name": "Test",
@@ -247,8 +246,52 @@ func TestStringToBool(t *testing.T) {
 }
 
 //nolint
-func TestTimestampToMillis(t *testing.T) {
+func TestDateStringToTimestamp(t *testing.T) {
+	schema := `
+	{
+		"name": "Test",
+		"type": "record",
+		"fields": [
+			{
+				"name": "test",
+				"type": "long",
+				"logicalType": "timestamp-millis"
+			}
+		]
+	}`
 
+	codec, err := goavro.NewCodec(schema)
+	assert.NoError(t, err)
+
+	jsonRecord := `
+	{"test": "2019-10-14T12:45:18Z"}
+	`
+
+	expected := map[string]interface{}{
+		"test": time.Unix(1571057118, 0).UTC(),
+	}
+
+	parser, err := NewParser(schema, WithDateTimeFormat(time.RFC3339))
+	assert.NoError(t, err)
+
+	result, err := parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
+	jsonRecord = `
+	{"test": "12:45:18-2019-10-14"}
+	`
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.Error(t, err)
+	assert.Nil(t, result)
+}
+
+//nolint
+func TestTimestampToMillis(t *testing.T) {
 	schema := `
 	{
 		"name": "Test",
@@ -354,7 +397,6 @@ func TestTimestampToMillis(t *testing.T) {
 
 //nolint
 func TestTimestampToMicros(t *testing.T) {
-
 	schema := `
 	{
 		"name": "Test",
