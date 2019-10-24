@@ -144,6 +144,7 @@ func ParseToJSONAvro() error {
 * `WithStringToBool()` will try to parse strings as booleans: `{"test": "False"}` => `{"test": false}`
 * `WithTimestampToMillis()` will add milliseconds to timestamps, only works for `logicalType="timestamp-millis"` fields: `{"test": 1571128870}` => `{"test": time.Time(1571128870000)}`
 * `WithTimestampToMicros()` will add microseconds to timestamps, only works for `logicalType="timestamp-micros"` fields: `{"test": 1571128870}` => `{"test": time.Time(1571128870000000)}`
+* `WithDateTimeFormat(format string)` will try to parse a string to a timestamp using the format specified as param, only works for `logicalType="timestamp-millis"` or `logicalType="timestamp-micros"` fields: `{"test": "2019-10-14T12:45:18Z"}` => (using `time.RFC3339` as format and type `logicalType="timestamp-millis`) => `{"test": time.Time(15710571180000)}`
 
 ### Supported types
 
