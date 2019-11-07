@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
-type valueParserFunction func(field *schema.Field, value interface{}) (interface{}, error)
+type valueParserFunction func(field *Field, value interface{}) (interface{}, error)
 
-func parseRecord(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseRecord(field *Field, record map[string]interface{}) (interface{}, error) {
 	avroRecord := map[string]interface{}{}
 
 	for _, v := range field.Fields {
@@ -25,7 +24,7 @@ func parseRecord(field *schema.Field, record map[string]interface{}) (interface{
 	return avroRecord, nil
 }
 
-func parseField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseField(field *Field, record map[string]interface{}) (interface{}, error) {
 	var result interface{}
 	var err error
 	switch field.Type {
@@ -45,43 +44,15 @@ func parseField(field *schema.Field, record map[string]interface{}) (interface{}
 	return result, nil
 }
 
-func parsePrimitiveField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
-	var parsedValue interface{}
-	var err error
-
-	fieldType := field.TypeValue.(string)
-
-	switch fieldType {
-	case types.StringType:
-		parsedValue, err = parseStringField(field, record)
-	case types.NilType:
-		parsedValue, err = parseNilField(field, record)
-	case types.BoolType:
-		parsedValue, err = parseBoolField(field, record)
-	case types.BytesType:
-		parsedValue, err = parseBytesField(field, record)
-	case types.FloatType:
-		parsedValue, err = parseFloatField(field, record)
-	case types.DoubleType:
-		parsedValue, err = parseDoubleField(field, record)
-	case types.LongType:
-		parsedValue, err = parseLongField(field, record)
-	case types.IntType:
-		parsedValue, err = parseIntField(field, record)
-	case types.RecordType:
-		parsedValue, err = parseRecordField(field, record)
-	default:
-		return nil, fmt.Errorf("type \"%s\" not supported yet", fieldType)
-	}
-
-	return parsedValue, err
+func parsePrimitiveField(field *Field, record map[string]interface{}) (interface{}, error) {
+	return field.ParseField(field, record)
 }
 
-func parseStringField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseStringField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseStringValue)
 }
 
-func parseStringValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseStringValue(field *Field, value interface{}) (interface{}, error) {
 	v, ok := value.(string)
 
 	if !ok {
@@ -91,7 +62,7 @@ func parseStringValue(field *schema.Field, value interface{}) (interface{}, erro
 	return v, nil
 }
 
-func parseBoolValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseBoolValue(field *Field, value interface{}) (interface{}, error) {
 	v, ok := value.(bool)
 
 	if !ok {
@@ -108,11 +79,11 @@ func parseBoolValue(field *schema.Field, value interface{}) (interface{}, error)
 	return v, nil
 }
 
-func parseBoolField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseBoolField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseBoolValue)
 }
 
-func parseBytesValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseBytesValue(field *Field, value interface{}) (interface{}, error) {
 	// []byte is a string in the json, we need to return it as []byte
 	v, ok := value.(string)
 
@@ -123,11 +94,11 @@ func parseBytesValue(field *schema.Field, value interface{}) (interface{}, error
 	return []byte(v), nil
 }
 
-func parseBytesField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseBytesField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseBytesValue)
 }
 
-func parseFloatValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseFloatValue(field *Field, value interface{}) (interface{}, error) {
 	v, ok := value.(float64)
 
 	if !ok {
@@ -144,11 +115,11 @@ func parseFloatValue(field *schema.Field, value interface{}) (interface{}, error
 	return float32(v), nil
 }
 
-func parseFloatField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseFloatField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseFloatValue)
 }
 
-func parseDoubleValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseDoubleValue(field *Field, value interface{}) (interface{}, error) {
 	v, ok := value.(float64)
 
 	if !ok {
@@ -165,11 +136,11 @@ func parseDoubleValue(field *schema.Field, value interface{}) (interface{}, erro
 	return v, nil
 }
 
-func parseDoubleField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseDoubleField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseDoubleValue)
 }
 
-func parseLongValueAsNumber(field *schema.Field, value interface{}) (interface{}, error) {
+func parseLongValueAsNumber(field *Field, value interface{}) (interface{}, error) {
 	var result int64
 
 	v, ok := value.(float64)
@@ -191,7 +162,7 @@ func parseLongValueAsNumber(field *schema.Field, value interface{}) (interface{}
 	return result, nil
 }
 
-func parseLongValueAsTimestamp(field *schema.Field, value interface{}) (interface{}, error) {
+func parseLongValueAsTimestamp(field *Field, value interface{}) (interface{}, error) {
 	// so timestamp is a bit different... we need to try first, and if we get an error we need to check if we need to format the date
 	v, err := parseLongValueAsNumber(field, value)
 
@@ -224,18 +195,18 @@ func parseLongValueAsTimestamp(field *schema.Field, value interface{}) (interfac
 	return time.Unix(0, result*int64(time.Microsecond)), nil
 }
 
-func parseLongValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseLongValue(field *Field, value interface{}) (interface{}, error) {
 	if field.LogicalType == types.TimestampMillis || field.LogicalType == types.TimestampMicros {
 		return parseLongValueAsTimestamp(field, value)
 	}
 	return parseLongValueAsNumber(field, value)
 }
 
-func parseLongField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseLongField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseLongValue)
 }
 
-func parseIntValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseIntValue(field *Field, value interface{}) (interface{}, error) {
 	v, ok := value.(float64)
 
 	if !ok {
@@ -252,15 +223,15 @@ func parseIntValue(field *schema.Field, value interface{}) (interface{}, error) 
 	return int32(v), nil
 }
 
-func parseIntField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseIntField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseIntValue)
 }
 
-func parseNilField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseNilField(field *Field, record map[string]interface{}) (interface{}, error) {
 	return parseWithDefaultValue(field, record, parseNilValue)
 }
 
-func parseNilValue(field *schema.Field, value interface{}) (interface{}, error) {
+func parseNilValue(field *Field, value interface{}) (interface{}, error) {
 	if value != nil {
 		return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"null\"", value, field.Name)
 	}
@@ -268,7 +239,7 @@ func parseNilValue(field *schema.Field, value interface{}) (interface{}, error) 
 	return nil, nil
 }
 
-func parseWithDefaultValue(field *schema.Field, record map[string]interface{}, valueParser valueParserFunction) (interface{}, error) {
+func parseWithDefaultValue(field *Field, record map[string]interface{}, valueParser valueParserFunction) (interface{}, error) {
 	value, ok := record[field.Name]
 	if !ok {
 		if !field.HasDefault {

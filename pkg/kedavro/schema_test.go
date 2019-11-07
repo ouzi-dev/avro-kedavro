@@ -1,4 +1,4 @@
-package schema
+package kedavro
 
 import (
 	"encoding/json"

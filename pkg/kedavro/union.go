@@ -4,11 +4,10 @@ import (
 	"fmt"
 
 	"github.com/linkedin/goavro"
-	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
-func parseUnionField(field *schema.Field, record map[string]interface{}) (interface{}, error) {
+func parseUnionField(field *Field, record map[string]interface{}) (interface{}, error) {
 	/*
 	 * How to deal with unions the easy way:
 	 * for now we have only unions ["null", "supported_type"] where the default can only be null
@@ -38,7 +37,8 @@ func parseUnionField(field *schema.Field, record map[string]interface{}) (interf
 	// we can do this safely cause we already validated this on the package schema
 	typeArray := field.TypeValue.([]interface{})
 	searchedType := typeArray[1].(string)
-	unionField := &schema.Field{
+	parseFunction, _ := getParseFieldFunction(searchedType)
+	unionField := &Field{
 		Name:      field.Name,
 		Type:      types.Primitive,
 		TypeValue: searchedType,
@@ -47,9 +47,10 @@ func parseUnionField(field *schema.Field, record map[string]interface{}) (interf
 		LogicalType: field.LogicalType,
 		// TODO: support record type in unions
 		// same as before, I think this should be something like searchedType["fields"]
-		Fields: []*schema.Field{},
+		Fields: []*Field{},
 		// only the first item of the union can have default
 		HasDefault: false,
+		ParseField: parseFunction,
 	}
 
 	parsedValue, err := parsePrimitiveField(unionField, record)
