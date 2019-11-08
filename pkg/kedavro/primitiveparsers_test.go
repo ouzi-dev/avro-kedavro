@@ -3,7 +3,6 @@ package kedavro
 import (
 	"testing"
 
-	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -161,12 +160,12 @@ func TestParsePrimitiveFields(t *testing.T) {
 
 }
 
-func getPrimitiveField(fieldType string, hasDefault bool, defaultValue interface{}) *schema.Field {
-	return &schema.Field{
+func getPrimitiveField(fieldType string, hasDefault bool, defaultValue interface{}) *Field {
+	return &Field{
 		Name:         "test",
 		Type:         types.Primitive,
 		TypeValue:    fieldType,
-		Fields:       []*schema.Field{},
+		Fields:       []*Field{},
 		HasDefault:   hasDefault,
 		DefaultValue: defaultValue,
 	}
@@ -180,7 +179,7 @@ func getRecord(fieldName string, value interface{}) map[string]interface{} {
 }
 
 type testItem struct {
-	field    *schema.Field
+	field    *Field
 	record   map[string]interface{}
 	isError  bool
 	expected interface{}

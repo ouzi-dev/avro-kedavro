@@ -1,10 +1,12 @@
-package schema
+package kedavro
 
 import (
 	"fmt"
 
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
+
+type parseFieldFunction = func(f *Field, record map[string]interface{}) (interface{}, error)
 
 type Field struct {
 	HasDefault   bool
@@ -15,6 +17,7 @@ type Field struct {
 	TypeValue    interface{}
 	DefaultValue interface{}
 	Fields       []*Field
+	ParseField   parseFieldFunction
 }
 
 func validateUnionFields(name string, unionTypes []interface{}, defaultValue interface{}) error {
@@ -51,16 +54,23 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 		return nil, fmt.Errorf("field type is required: %v", f)
 	}
 	defaultValue, hasDefault := fieldMap["default"]
+	var err error
 	var fieldType types.FieldType
+	var parserFunction parseFieldFunction
 	switch t := typeValue.(type) {
 	case string:
 		fieldType = types.Primitive
+		parserFunction, err = getParseFieldFunction(t)
+		if err != nil {
+			return nil, err
+		}
 	case []interface{}:
 		fieldType = types.Union
 		// for now we only accept Unions with max two items, and the first one has to be null
 		if err := validateUnionFields(name, t, defaultValue); err != nil {
 			return nil, err
 		}
+		parserFunction = parseUnionField
 	case map[string]interface{}:
 		// ok since we just want json accepted by the schema... let's do some magic here
 		return getObjectType(fieldMap, t, opts)
@@ -97,8 +107,34 @@ func ParseSchemaField(f interface{}, opts types.Options) (*Field, error) {
 		LogicalType:  logicalType,
 		TypeValue:    typeValue,
 		Opts:         opts,
+		ParseField:   parserFunction,
 	}
 	return parsedField, nil
+}
+
+func getParseFieldFunction(fieldType string) (parseFieldFunction, error) {
+	switch fieldType {
+	case types.StringType:
+		return parseStringField, nil
+	case types.NilType:
+		return parseNilField, nil
+	case types.BoolType:
+		return parseBoolField, nil
+	case types.BytesType:
+		return parseBytesField, nil
+	case types.FloatType:
+		return parseFloatField, nil
+	case types.DoubleType:
+		return parseDoubleField, nil
+	case types.LongType:
+		return parseLongField, nil
+	case types.IntType:
+		return parseIntField, nil
+	case types.RecordType:
+		return parseRecordField, nil
+	default:
+		return nil, fmt.Errorf("type \"%s\" not supported", fieldType)
+	}
 }
 
 func getObjectType(parentField, childField map[string]interface{}, opts types.Options) (*Field, error) {

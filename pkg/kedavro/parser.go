@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 )
 
 type parser struct {
-	schema *schema.Field
+	schema *Field
 }
 
 type Parser interface {
@@ -55,7 +54,7 @@ func NewParser(schemaString string, opts ...ParserOption) (Parser, error) {
 		opt(&options)
 	}
 
-	rootField, err := schema.ParseSchemaField(s, options)
+	rootField, err := ParseSchemaField(s, options)
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/ouzi-dev/avro-kedavro/pkg/schema"
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -74,11 +73,11 @@ func getJSONAsNative(jsonString string, t *testing.T) map[string]interface{} {
 	return jsonMap
 }
 
-func getFieldFromJSON(jsonString string, t *testing.T) *schema.Field {
+func getFieldFromJSON(jsonString string, t *testing.T) *Field {
 	jsonMap := map[string]interface{}{}
 	err := json.Unmarshal([]byte(jsonString), &jsonMap)
 	assert.NoError(t, err)
-	field, err := schema.ParseSchemaField(jsonMap, types.Options{})
+	field, err := ParseSchemaField(jsonMap, types.Options{})
 	assert.NoError(t, err)
 	return field
 }
