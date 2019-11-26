@@ -51,6 +51,7 @@ func parseUnionField(field *Field, record map[string]interface{}) (interface{}, 
 		// only the first item of the union can have default
 		HasDefault: false,
 		ParseField: parseFunction,
+		Opts:       field.Opts,
 	}
 
 	parsedValue, err := parsePrimitiveField(unionField, record)
