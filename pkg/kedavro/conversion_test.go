@@ -9,6 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const failJSONRecord = `
+{"test": false}
+`
+
 func TestStringToFloat(t *testing.T) {
 	schema := `
 	{
@@ -38,14 +42,53 @@ func TestStringToFloat(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
-	jsonRecord = `
-	{"test": false}
+	parser, err = NewParser(schema, WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(failJSONRecord))
+	assert.Error(t, err)
+	assert.Nil(t, result)
+}
+
+func TestUnionStringToLong(t *testing.T) {
+	schema := `
+	{
+		"name": "Test",
+		"type": "record",
+		"fields": [
+			{
+				"name": "test",
+				"type": [
+					"null",
+					"long"
+				],
+				"default": null
+			}
+		]
+	}
 	`
+
+	jsonRecord := `
+	{"test": "123"}
+	`
+
+	expected := map[string]interface{}{
+		"test": map[string]interface{}{
+			"long": int64(123),
+		},
+	}
+
+	parser, err := NewParser(schema, WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err := parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
 
 	parser, err = NewParser(schema, WithStringToNumber())
 	assert.NoError(t, err)
 
-	result, err = parser.Parse([]byte(jsonRecord))
+	result, err = parser.Parse([]byte(failJSONRecord))
 	assert.Error(t, err)
 	assert.Nil(t, result)
 }
@@ -120,14 +163,10 @@ func TestStringToLong(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, reflect.DeepEqual(expected, result))
 
-	jsonRecord = `
-	{"test": false}
-	`
-
 	parser, err = NewParser(schema, WithStringToNumber())
 	assert.NoError(t, err)
 
-	result, err = parser.Parse([]byte(jsonRecord))
+	result, err = parser.Parse([]byte(failJSONRecord))
 	assert.Error(t, err)
 	assert.Nil(t, result)
 }
