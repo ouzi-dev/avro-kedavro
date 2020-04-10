@@ -2,6 +2,7 @@ package kedavro
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/ouzi-dev/avro-kedavro/pkg/types"
@@ -167,11 +168,37 @@ func parseLongValueAsTimestamp(field *Field, value interface{}) (interface{}, er
 	v, err := parseLongValueAsNumber(field, value)
 
 	if err != nil {
+		// special case, if we get a timestamp as number with decimals but it's a string...
+		// it will fail parsing to long, but we can deal with it as a double
+		d, err := parseDoubleValue(field, value)
+		if err == nil {
+			asFloat := d.(float64)
+			sec, dec := math.Modf(asFloat)
+
+			var factor float64
+			//now we need to keep millisecs or microsecs
+			if field.LogicalType == types.TimestampMillis {
+				factor = 1000
+			} else {
+				factor = 1000000
+			}
+
+			f := int64(dec * factor)
+
+			if field.LogicalType == types.TimestampMillis {
+				return time.Unix(int64(sec), f*int64(time.Millisecond)), nil
+			}
+
+			return time.Unix(int64(sec), f*int64(time.Microsecond)), nil
+		}
+
+		// no we couldn't parse it as a long or a double so let's check if it's a string
+		// with the format passed as parameter
 		if field.Opts.IsFormatDateTime {
 			f, ok := value.(string)
 			if !ok {
 				// we can't parse as number and it's not a string so... error
-				return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"long\" or \"string\"", value, field.Name)
+				return nil, fmt.Errorf("value \"%v\" in field \"%s\" in not of type \"long\", \"double\" or \"string\"", value, field.Name)
 			}
 			t, err := time.Parse(field.Opts.DateTimeFormat, f)
 			if err != nil {

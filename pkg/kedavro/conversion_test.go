@@ -366,6 +366,25 @@ func TestTimestampToMillis(t *testing.T) {
 	_, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
 
+	// if number with decimals provided it ignores the decimals
+	jsonRecord = `
+	{"test": 1571057118.4566788943}
+	`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(0, 1571057118*int64(time.Second)),
+	}
+
+	parser, err = NewParser(schema, WithTimestampToMillis())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
 	jsonRecord = `
 		{"test": "1571057118"}
 		`
@@ -383,6 +402,44 @@ func TestTimestampToMillis(t *testing.T) {
 
 	_, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
+
+	// if string with number with decimals provided it keeps decimals as milliseconds
+	jsonRecord = `
+		{"test": "1571057118.12345678"}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(1571057118, 123*int64(time.Millisecond)),
+	}
+
+	parser, err = NewParser(schema, WithTimestampToMillis(), WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
+	// if string with number with decimals provided it keeps decimals as milliseconds
+	// even without conversion to millis
+	jsonRecord = `
+		{"test": "1571057118.12345678"}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(1571057118, 123*int64(time.Millisecond)),
+	}
+
+	parser, err = NewParser(schema, WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
 
 	// timestamp with millis and no conversion
 	jsonRecord = `
@@ -403,7 +460,7 @@ func TestTimestampToMillis(t *testing.T) {
 	_, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
 
-	// timestamp with microseconds and conversion from string
+	// timestamp with millis and conversion from string
 	jsonRecord = `
 		{"test": "1571057118123"}
 		`
@@ -427,6 +484,18 @@ func TestTimestampToMillis(t *testing.T) {
 		`
 
 	parser, err = NewParser(schema, WithTimestampToMillis(), WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.Error(t, err)
+	assert.Nil(t, result)
+
+	// if string is number with decimals and no WithStringToNumber it fails
+	jsonRecord = `
+		{"test": "1571057118.12345678"}
+		`
+
+	parser, err = NewParser(schema)
 	assert.NoError(t, err)
 
 	result, err = parser.Parse([]byte(jsonRecord))
@@ -471,6 +540,25 @@ func TestTimestampToMicros(t *testing.T) {
 	_, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
 
+	// if number with decimals provided it ignores the decimals
+	jsonRecord = `
+	{"test": 1571057118.4566788943}
+	`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(0, 1571057118*int64(time.Second)),
+	}
+
+	parser, err = NewParser(schema, WithTimestampToMicros())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
 	jsonRecord = `
 		{"test": "1571057118"}
 		`
@@ -488,6 +576,44 @@ func TestTimestampToMicros(t *testing.T) {
 
 	_, err = codec.TextualFromNative(nil, result)
 	assert.NoError(t, err)
+
+	// if string with number with decimals provided it keeps decimals as microseconds
+	jsonRecord = `
+		{"test": "1571057118.12345678"}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(1571057118, 123456*int64(time.Microsecond)),
+	}
+
+	parser, err = NewParser(schema, WithTimestampToMicros(), WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
+	// if string with number with decimals provided it keeps decimals as milliseconds
+	// even without conversion to micros
+	jsonRecord = `
+		{"test": "1571057118.12345678"}
+		`
+
+	expected = map[string]interface{}{
+		"test": time.Unix(1571057118, 123456*int64(time.Microsecond)),
+	}
+
+	parser, err = NewParser(schema, WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+	assert.True(t, reflect.DeepEqual(expected, result))
+
+	_, err = codec.TextualFromNative(nil, result)
 
 	// timestamp with microseconds and no conversion
 	jsonRecord = `
@@ -532,6 +658,18 @@ func TestTimestampToMicros(t *testing.T) {
 		`
 
 	parser, err = NewParser(schema, WithTimestampToMicros(), WithStringToNumber())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.Error(t, err)
+	assert.Nil(t, result)
+
+	// if string is number with decimals and no WithStringToNumber it fails
+	jsonRecord = `
+		{"test": "1571057118.12345678"}
+		`
+
+	parser, err = NewParser(schema)
 	assert.NoError(t, err)
 
 	result, err = parser.Parse([]byte(jsonRecord))

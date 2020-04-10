@@ -24,7 +24,7 @@ test: fmt lint
 .PHONY: lint
 lint: bootstrap 
 	@echo "lint target..."
-	@golangci-lint run --enable-all --disable lll,godox,wsl,funlen ./...
+	@golangci-lint run --enable-all --disable lll,godox,wsl,funlen,gomnd ./...
 
 .PHONY: bootstrap
 bootstrap:
