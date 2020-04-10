@@ -204,7 +204,7 @@ Accepted values in json for timestamps are:
 * Numeric values: for example `1586502702` will be accepted as a timestamp, if a numeric value has decimals, those decimals will be ignored when parsing to `time.Time`
 * Strings: only if `WithStringToNumber()` option is provided, the string will be parsed like:
   * If the string is a number without decimals: it will be treated as a timestamp (in seconds, milliseconds, or microseconds depending on the provided options to the parser)
-  * If the string is a number with decimal: it will be treated as a timestamp where the decimals will be consider fractions of seconds.
+  * If the string is a number with decimals: it will be treated as a timestamp where the decimals will be consider fractions of seconds.
     * If the selected type is `timestamp-millis` the parser will keep the first three decimals.
     * If the selected type is `timestamp-micros` the parser will keep the first six decimals.
   * If the string has non-numeric characters: the parser will try to parse the string to `time.Time` using the provided format with the option `WithDateTimeFormat(format string)`

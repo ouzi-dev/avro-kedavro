@@ -20,6 +20,7 @@ type Field struct {
 	ParseField   parseFieldFunction
 }
 
+// nolint gomnd
 func validateUnionFields(name string, unionTypes []interface{}, defaultValue interface{}) error {
 	if len(unionTypes) != 2 {
 		return fmt.Errorf("only unions with two types are supported, union name \"%s\", types: %v", name, unionTypes)
