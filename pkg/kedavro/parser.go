@@ -41,6 +41,12 @@ func WithDateTimeFormat(format string) ParserOption {
 	}
 }
 
+func WithNowForNullTimestamp() ParserOption {
+	return func(o *types.Options) {
+		o.IsSetNowForNilTimestamp = true
+	}
+}
+
 func NewParser(schemaString string, opts ...ParserOption) (Parser, error) {
 	s := map[string]interface{}{}
 

@@ -145,6 +145,7 @@ func ParseToJSONAvro() error {
 * `WithTimestampToMillis()` will add milliseconds to timestamps, only works for `logicalType="timestamp-millis"` fields: `{"test": 1571128870}` => `{"test": time.Time(1571128870000)}`
 * `WithTimestampToMicros()` will add microseconds to timestamps, only works for `logicalType="timestamp-micros"` fields: `{"test": 1571128870}` => `{"test": time.Time(1571128870000000)}`
 * `WithDateTimeFormat(format string)` will try to parse a string to a timestamp using the format specified as param, only works for `logicalType="timestamp-millis"` or `logicalType="timestamp-micros"` fields: `{"test": "2019-10-14T12:45:18Z"}` => (using `time.RFC3339` as format and type `logicalType="timestamp-millis`) => `{"test": time.Time(15710571180000)}`
+* `WithNowForNullTimestamp` will set `time.Now()` if the field is null, only works for `logicalType="timestamp-millis"` or `logicalType="timestamp-micros"` fields.
 
 ### Supported types
 
@@ -165,12 +166,12 @@ Not all the avro types are supported by `avro-kedavro` yet! The current supporte
 
 Unsupported types:
 
-| Avro               | 
-| ------------------ |
-| `enum`             |
-| `fixed`            |
-| `map`              |
-| `array`            |
+| Avro    |
+| ------- |
+| `enum`  |
+| `fixed` |
+| `map`   |
+| `array` |
 
 ### Supported Unions
 
@@ -208,3 +209,4 @@ Accepted values in json for timestamps are:
     * If the selected type is `timestamp-millis` the parser will keep the first three decimals.
     * If the selected type is `timestamp-micros` the parser will keep the first six decimals.
   * If the string has non-numeric characters: the parser will try to parse the string to `time.Time` using the provided format with the option `WithDateTimeFormat(format string)`
+* `null`: only if `WithNowForNullTimestamp()` option is provided. When the option is provided, if a null is found for a `timestamp-millis` or `timestamp-micros` field, `time.Now()` will be used as value.
