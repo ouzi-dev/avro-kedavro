@@ -230,6 +230,11 @@ func parseLongValue(field *Field, value interface{}) (interface{}, error) {
 }
 
 func parseLongField(field *Field, record map[string]interface{}) (interface{}, error) {
+	if field.LogicalType == types.TimestampMillis || field.LogicalType == types.TimestampMicros {
+		if v, ok := record[field.Name]; (!ok || v == nil) && field.Opts.IsSetNowForNilTimestamp {
+			return time.Now(), nil
+		}
+	}
 	return parseWithDefaultValue(field, record, parseLongValue)
 }
 

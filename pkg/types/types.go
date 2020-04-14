@@ -9,10 +9,11 @@ const (
 )
 
 type Options struct {
-	IsStringToNumber    bool
-	IsStringToBool      bool
-	IsTimestampToMillis bool
-	IsTimestampToMicros bool
-	IsFormatDateTime    bool
-	DateTimeFormat      string
+	IsStringToNumber        bool
+	IsStringToBool          bool
+	IsTimestampToMillis     bool
+	IsTimestampToMicros     bool
+	IsFormatDateTime        bool
+	IsSetNowForNilTimestamp bool
+	DateTimeFormat          string
 }

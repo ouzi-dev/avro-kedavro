@@ -501,6 +501,69 @@ func TestTimestampToMillis(t *testing.T) {
 	result, err = parser.Parse([]byte(jsonRecord))
 	assert.Error(t, err)
 	assert.Nil(t, result)
+
+	jsonRecord = `
+		{"bleh": "blah"}
+		`
+
+	parser, err = NewParser(schema)
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.Error(t, err)
+	assert.Nil(t, result)
+
+	jsonRecord = `
+		{"bleh": "blah"}
+		`
+
+	parser, err = NewParser(schema, WithNowForNullTimestamp())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+
+	resultAsMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+
+	assert.NotNil(t, resultAsMap["test"])
+
+	resultTime := resultAsMap["test"].(time.Time)
+
+	now := time.Now()
+	// just checking the returned time is between now and 2 seconds ago...
+	// if the test took more than 2 seconds... it deserves to fail :D
+	assert.True(t, now.Before(resultTime.Add(2*time.Second)))
+	assert.True(t, resultTime.Before(now))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
+	jsonRecord = `
+	{"test": null}
+	`
+
+	parser, err = NewParser(schema, WithNowForNullTimestamp())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+
+	resultAsMap, ok = result.(map[string]interface{})
+	assert.True(t, ok)
+
+	assert.NotNil(t, resultAsMap["test"])
+
+	resultTime = resultAsMap["test"].(time.Time)
+
+	now = time.Now()
+	// just checking the returned time is between now and 2 seconds ago...
+	// if the test took more than 2 seconds... it deserves to fail :D
+	assert.True(t, now.Before(resultTime.Add(2*time.Second)))
+	assert.True(t, resultTime.Before(now))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
 }
 
 //nolint
@@ -675,4 +738,56 @@ func TestTimestampToMicros(t *testing.T) {
 	result, err = parser.Parse([]byte(jsonRecord))
 	assert.Error(t, err)
 	assert.Nil(t, result)
+
+	jsonRecord = `
+		{"bleh": "blah"}
+		`
+
+	parser, err = NewParser(schema, WithNowForNullTimestamp())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+
+	resultAsMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+
+	assert.NotNil(t, resultAsMap["test"])
+
+	resultTime := resultAsMap["test"].(time.Time)
+
+	now := time.Now()
+	// just checking the returned time is between now and 2 seconds ago...
+	// if the test took more than 2 seconds... it deserves to fail :D
+	assert.True(t, now.Before(resultTime.Add(2*time.Second)))
+	assert.True(t, resultTime.Before(now))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+
+	jsonRecord = `
+	{"test": null}
+	`
+
+	parser, err = NewParser(schema, WithNowForNullTimestamp())
+	assert.NoError(t, err)
+
+	result, err = parser.Parse([]byte(jsonRecord))
+	assert.NoError(t, err)
+
+	resultAsMap, ok = result.(map[string]interface{})
+	assert.True(t, ok)
+
+	assert.NotNil(t, resultAsMap["test"])
+
+	resultTime = resultAsMap["test"].(time.Time)
+
+	now = time.Now()
+	// just checking the returned time is between now and 2 seconds ago...
+	// if the test took more than 2 seconds... it deserves to fail :D
+	assert.True(t, now.Before(resultTime.Add(2*time.Second)))
+	assert.True(t, resultTime.Before(now))
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
 }
