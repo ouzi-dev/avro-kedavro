@@ -44,8 +44,22 @@
       ],
       "@semantic-release/release-notes-generator",
       [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "make test-checker-cli package-checker-cli VERSION=v${nextRelease.version}"
+        }
+      ],
+      [
         "@semantic-release/github",
         {
+          "assets": [
+            {
+              "path": "cli/_dist/*.tar.gz"
+            },
+            {
+              "path": "cli/_dist/*.zip"
+            }
+          ],
           "successComment": "This ${issue.pull_request ? 'pull request' : 'issue'} is included in version ${nextRelease.version}",
           "failComment": "The release from ${branch} had failed due to the following errors:\n- ${errors.map(err => err.message).join('\\n- ')}"
         }

@@ -43,6 +43,13 @@ covhtml: test
 	@scripts/coverage.sh
 	@go tool cover -html=.cover/cover.out
 
+.PHONY: test-checker-cli
+test-checker-cli:
+	$(MAKE) -C cli bootstrap test lint
+
+.PHONY: package-checker-cli
+package-checker-cli:
+	$(MAKE) -C cli clean dist VERSION=$(VERSION)
 
 .PHONY: semantic-release
 semantic-release:
