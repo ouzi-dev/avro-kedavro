@@ -16,7 +16,7 @@
     "tar": "^6.0.2",
     "env-ci": "5.0.2",
     "minimist": ">=1.2.5",
-    "lodash": ">=4.17.19"
+    "lodash": ">=4.17.21"
   },
   "release": {
     "plugins": [
