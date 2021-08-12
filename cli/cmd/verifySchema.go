@@ -3,6 +3,7 @@ package cmd
 import (
 	"io/ioutil"
 
+	"github.com/linkedin/goavro/v2"
 	"github.com/ouzi-dev/avro-kedavro/pkg/kedavro"
 	"github.com/spf13/cobra"
 )
@@ -23,6 +24,12 @@ var verifySchemaCmd = &cobra.Command{
 		_, err = kedavro.NewParser(string(data), kedavro.WithStringToNumber(), kedavro.WithTimestampToMillis())
 		if err != nil {
 			// Error parsing schema
+			return err
+		}
+
+		_, err = goavro.NewCodec(string(data))
+		if err != nil {
+			// Error building a codec.
 			return err
 		}
 
