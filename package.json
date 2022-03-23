@@ -68,7 +68,7 @@
     ],
     "preset": "angular",
     "branches": [
-      "master"
+      "main"
     ],
     "tagFormat": "v${version}",
     "ci": false
