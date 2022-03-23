@@ -1,6 +1,7 @@
 package kedavro
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/linkedin/goavro/v2"
@@ -181,11 +182,51 @@ func TestParserNoDefaults(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestParseMapNoDefaults(t *testing.T) {
+	p, err := NewParser(string(parserSchema))
+	assert.NoError(t, err)
+
+	asMap := map[string]interface{}{}
+
+	err = json.Unmarshal([]byte(test1), &asMap)
+
+	assert.NoError(t, err)
+
+	result, err := p.ParseMap(asMap)
+	assert.NoError(t, err)
+
+	codec, err := goavro.NewCodec(string(parserSchema))
+	assert.NoError(t, err)
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+}
+
 func TestParserDefaults(t *testing.T) {
 	p, err := NewParser(string(parserSchema))
 	assert.NoError(t, err)
 
 	result, err := p.Parse([]byte(test2))
+	assert.NoError(t, err)
+
+	codec, err := goavro.NewCodec(string(parserSchema))
+	assert.NoError(t, err)
+
+	_, err = codec.TextualFromNative(nil, result)
+	assert.NoError(t, err)
+}
+
+func TestParseMapDefaults(t *testing.T) {
+	p, err := NewParser(string(parserSchema))
+	assert.NoError(t, err)
+
+	asMap := map[string]interface{}{}
+
+	err = json.Unmarshal([]byte(test2), &asMap)
+
+	assert.NoError(t, err)
+
+	result, err := p.ParseMap(asMap)
 	assert.NoError(t, err)
 
 	codec, err := goavro.NewCodec(string(parserSchema))
