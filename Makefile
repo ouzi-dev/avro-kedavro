@@ -16,6 +16,11 @@ vendor: tidy
 	@echo "vendor target..."
 	@go mod vendor
 
+.PHONY: build
+build: fmt lint
+	@echo "build target..."
+	@go build ./...
+
 .PHONY: test
 test: fmt lint
 	@echo "test target..."

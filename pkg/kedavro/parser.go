@@ -13,6 +13,7 @@ type parser struct {
 
 type Parser interface {
 	Parse(record []byte) (interface{}, error)
+	ParseMap(record map[string]interface{}) (interface{}, error)
 }
 
 // ParserOption reconfigure the parser creation.
@@ -83,4 +84,8 @@ func (p *parser) Parse(record []byte) (interface{}, error) {
 	}
 
 	return parseRecord(p.schema, jsonRecord)
+}
+
+func (p *parser) ParseMap(record map[string]interface{}) (interface{}, error) {
+	return parseRecord(p.schema, record)
 }
