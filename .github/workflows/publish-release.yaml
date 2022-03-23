@@ -43,6 +43,6 @@ jobs:
 
       - name: release
         id: release
-        run: make semantic-release-ci
+        run: make semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
