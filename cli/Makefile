@@ -9,7 +9,7 @@ GIT_TAG    := $(shell git describe --tags --abbrev=0 --exact-match 2>/dev/null)
 GIT_DIRTY  = $(shell test -n "`git status --porcelain`" && echo "dirty" || echo "clean")
 
 TMP_VERSION := $(GIT_SHORT_COMMIT)
-
+HAS_GOX := $(shell command -v gox;)
 
 ifndef VERSION
 ifeq ($(GIT_DIRTY), clean)
@@ -37,18 +37,18 @@ vendor: tidy
 	@go mod vendor
 
 .PHONY: test
-test: fmt lint
+test: fmt 
 	@echo "test target..."
 	@go test ./... -v -count=1
 
 .PHONY: lint
-lint: bootstrap
+lint: bootstrap-lint
 	@echo "lint target..."
 	@golangci-lint run --enable-all --disable lll,godox,wsl,funlen,gochecknoglobals,gochecknoinits ./...
 
-.PHONY: bootstrap
-bootstrap:
-	@echo "bootstrap target..."
+.PHONY: bootstrap-lint
+bootstrap-lint:
+	@echo "bootstrap-lint target..."
 ifndef HAS_GOLANCI_LINT
 	@GOPROXY=direct GOSUMDB=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 endif
@@ -64,8 +64,15 @@ build: build-cross
 # usage: make clean build-cross dist VERSION=v0.2-alpha
 .PHONY: build-cross
 build-cross: LDFLAGS += -extldflags "-static"
-build-cross:
+build-cross: bootstrap-gox
 	CGO_ENABLED=0 gox -parallel=3 -output="_dist/{{.OS}}-{{.Arch}}/avro-kedavro-checker" -osarch='$(TARGETS)' -ldflags '$(LDFLAGS)' $(BUILD_PATH)
+
+.PHONY: bootstrap-gox
+bootstrap-gox: 
+	@echo "bootstrap-gox target..."
+ifndef HAS_GOX
+	@go get -u github.com/mitchellh/gox
+endif
 
 .PHONY: dist
 dist: build
