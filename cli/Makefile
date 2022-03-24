@@ -56,7 +56,7 @@ endif
 .PHONY: fmt
 fmt:
 	@echo "fmt target..."
-	@find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
+	@gofmt -l -w -s $(SRC)
 
 .PHONY: build
 build: build-cross
