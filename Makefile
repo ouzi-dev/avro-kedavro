@@ -50,7 +50,7 @@ covhtml: test
 
 .PHONY: test-checker-cli
 test-checker-cli:
-	$(MAKE) -C cli bootstrap test lint
+	$(MAKE) -C cli test
 
 .PHONY: package-checker-cli
 package-checker-cli:

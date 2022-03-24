@@ -18,5 +18,5 @@ jobs:
           go-version: ${{ env.GOLANG_VERSION }}
 
       - name: build and test
-        run: make build test
+        run: make build test test-checker-cli package-checker-cli
   
