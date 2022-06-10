@@ -15,7 +15,7 @@
     "fstream": "^1.0.12",
     "lodash": ">=4.17.21",
     "minimist": ">=1.2.6",
-    "semantic-release": "^19.0.2",
+    "semantic-release": "^19.0.3",
     "tar": "^6.1.11"
   },
   "release": {
