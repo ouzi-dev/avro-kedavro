@@ -81,7 +81,7 @@
     "access": "restricted"
   },
   "dependencies": {
-    "npm": ">=8.5.5",
+    "npm": ">=8.19.2",
     "npm-check-updates": "^12.5.4",
     "npm-registry-fetch": ">=13.1.0"
   }
